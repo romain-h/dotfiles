@@ -20,12 +20,13 @@ Bundle 'scrooloose/syntastic'
 Bundle 'groenewege/vim-less'
 Bundle 'nono/vim-handlebars'
 Bundle 'othree/html5.vim'
+Bundle 'mattn/emmet-vim'
 Bundle 'tpope/vim-surround'
 Bundle 'elzr/vim-json'
 Bundle 'jiangmiao/auto-pairs'
 Bundle 'tpope/vim-sensible'
 Bundle 'nathanaelkane/vim-indent-guides'
-Bundle 'plasticboy/vim-markdown'
+Bundle 'tpope/vim-markdown'
 Bundle 'vim-scripts/scratch.vim'
 Bundle 'Shougo/neocomplcache.vim'
 Bundle 'pangloss/vim-javascript'
@@ -35,9 +36,11 @@ Bundle 'terryma/vim-multiple-cursors'
 Bundle 'majutsushi/tagbar'
 " Bundle 'marijnh/tern_for_vim'
 Bundle 'skwp/greplace.vim'
-Bundle 'gorodinskiy/vim-coloresque'
 Bundle 'kchmck/vim-coffee-script'
+Bundle 'sdanielf/vim-stdtabs'
 Bundle 'bufkill.vim'
+Bundle 'jnwhiteh/vim-golang'
+Bundle 'Floobits/floobits-vim'
 
 filetype plugin on
 filetype indent on
@@ -137,14 +140,14 @@ set autoread
 set cursorline          " Higlight the current line
 " set rtp+=~/.vim/bundle/SunburstVIM/
 colorscheme hybrid
-
+set noeb vb t_vb=
 " My Key bindings
   map <D-k> :NERDTreeToggle<CR>
   map <M-D-p> :ReadBookmarks
 
   map <Leader>f :Ack
   map <Leader>p :CtrlPBuffer<cr>
-
+  nmap <Leader>T :CtrlPClearCache<CR>:CtrlP<CR>
 " Bubble single lines (kicks butt)
 " http://vimcasts.org/episodes/bubbling-text/
 " nmap <CA-Up> ddkP
@@ -187,5 +190,12 @@ if has("autocmd")
   autocmd bufwritepost .vimrc source ~/.vimrc
  augroup END
 endif
-
+" Specifics functions
+function! CopyMatches(reg)
+  let hits = []
+  %s//\=len(add(hits, submatch(0))) ? submatch(0) : ''/ge
+  let reg = empty(a:reg) ? '+' : a:reg
+  execute 'let @'.reg.' = join(hits, "\n") . "\n"'
+endfunction
+command! -register CopyMatches call CopyMatches(<q-reg>)
 set clipboard=unnamed
