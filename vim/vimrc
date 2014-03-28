@@ -136,6 +136,9 @@ set backup " enable backup
 " auto file reloading
 set autoread
 
+" Remove bell beeping
+set vb
+
 " Color Scheme
 set cursorline          " Higlight the current line
 " set rtp+=~/.vim/bundle/SunburstVIM/
