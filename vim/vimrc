@@ -41,6 +41,9 @@ Bundle 'sdanielf/vim-stdtabs'
 Bundle 'bufkill.vim'
 Bundle 'jnwhiteh/vim-golang'
 Bundle 'Floobits/floobits-vim'
+Bundle 'heavenshell/vim-jsdoc'
+Bundle 'mattn/webapi-vim'
+Bundle 'mattn/gist-vim'
 
 filetype plugin on
 filetype indent on
@@ -148,7 +151,7 @@ set noeb vb t_vb=
   map <D-k> :NERDTreeToggle<CR>
   map <M-D-p> :ReadBookmarks
 
-  map <Leader>f :Ack
+  map <Leader>f :Ack<space>
   map <Leader>p :CtrlPBuffer<cr>
   nmap <Leader>T :CtrlPClearCache<CR>:CtrlP<CR>
 " Bubble single lines (kicks butt)
@@ -185,6 +188,10 @@ autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 
 inoremap <expr><Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+
+" Gist
+let g:gist_post_private = 1
+let g:gist_detect_filetype = 1
 
 " Source the vimrc file after saving it. This way, you don't have to reload Vim to see the changes.
 if has("autocmd")
