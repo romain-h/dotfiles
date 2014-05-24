@@ -40,12 +40,16 @@ ZSH_THEME="romain"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git osx themes rvm rake brew)
+plugins=(git osx themes rvm rake brew django pip)
 
 source $ZSH/oh-my-zsh.sh
 
 # Customize io your needs...
 export PATH=/usr/local/bin:$PATH
 export PATH=/usr/local/sbin:$PATH
+
+# CLANG osX ...
+export CFLAGS=-Qunused-arguments
+export CPPFLAGS=-Qunused-arguments
 
 source $HOME/.env_custom
