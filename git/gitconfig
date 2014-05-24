@@ -12,6 +12,10 @@
   fp = format-patch
   lg = log --graph --pretty=tformat:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%an %cr)%Creset' --abbrev-commit --date=relative
 
+[core]
+  editor = /usr/local/bin/vim
+  autocrlf = input
+
 [merge]
   tool = opendiff
 [github]
