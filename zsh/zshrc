@@ -42,9 +42,17 @@ ZSH_THEME="romain"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(git osx themes rvm rake brew django pip)
 
+
 source $ZSH/oh-my-zsh.sh
 
 # Customize io your needs...
+# set vi keybinding as default
+bindkey -v
+# Keep retro compat with incremental search
+bindkey "^R" history-incremental-search-backward
+# Kill the lag with [esc]...
+export KEYTIMEOUT=1
+
 export PATH=/usr/local/bin:$PATH
 export PATH=/usr/local/sbin:$PATH
 
