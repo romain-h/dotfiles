@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "Dotfiles install ..."
 usage="$(basename "$0") [-h] [-s n] -- Install or update dotfiles
