@@ -95,4 +95,10 @@ done
 # install vim
 sh vim/install.sh
 
+# create custom env file
+touch ~/.env_custom
+
+# Test zsh install and switch to it for the current  user
+#
+chsh -s $(which zsh)
 echo -e "\xF0\x9F\x8D\xBA Installation: Done!"
