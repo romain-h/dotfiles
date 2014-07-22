@@ -11,39 +11,56 @@ call vundle#rc()
 " Vundle manage
 Bundle 'gmarik/vundle'
 
-" Bundles
-Bundle 'tpope/vim-fugitive'
+" Main (mandatory) bundles
+" ------------------------
+" Init vimrc by tpope
+Bundle 'tpope/vim-sensible'
+" Powerline with colors
+Bundle 'Lokaltog/vim-powerline'
+" Search with ack
 Bundle 'mileszs/ack.vim'
-"Bundle 'scrooloose/nerdtree'
+" Vinegar to use netrw
 Bundle 'tpope/vim-vinegar'
+" the missing comment tool
 Bundle 'scrooloose/nerdcommenter'
+" Multi language checker
 Bundle 'scrooloose/syntastic'
+" Surrounder
+Bundle 'tpope/vim-surround'
+Bundle 'jiangmiao/auto-pairs'
+" Block note into buffer
+Bundle 'vim-scripts/scratch.vim'
+" Autocompletion
+Bundle 'Shougo/neocomplcache.vim'
+" Lazy search file navigator
+Bundle 'kien/ctrlp.vim'
+" Standard indentation matching language
+Bundle 'sdanielf/vim-stdtabs'
+
+" Nice to have but not required for you Jedi
+" ------------------------------------------
+" IDE like navigator into methode
+Bundle 'majutsushi/tagbar'
+" Indentation guide <leader>ig
+Bundle 'nathanaelkane/vim-indent-guides'
+" Replace into multifiles
+Bundle 'skwp/greplace.vim'
+" html tags
+Bundle 'mattn/emmet-vim'
+Bundle 'tpope/vim-markdown'
+
+" Specific to projects
+" --------------------
+Bundle 'mattn/gist-vim'
 Bundle 'groenewege/vim-less'
 Bundle 'nono/vim-handlebars'
 Bundle 'othree/html5.vim'
-Bundle 'mattn/emmet-vim'
-Bundle 'tpope/vim-surround'
 Bundle 'elzr/vim-json'
-Bundle 'jiangmiao/auto-pairs'
-Bundle 'tpope/vim-sensible'
-Bundle 'nathanaelkane/vim-indent-guides'
-Bundle 'tpope/vim-markdown'
-Bundle 'vim-scripts/scratch.vim'
-Bundle 'Shougo/neocomplcache.vim'
-Bundle 'pangloss/vim-javascript'
-Bundle 'kien/ctrlp.vim'
-Bundle 'Lokaltog/vim-powerline'
-Bundle 'terryma/vim-multiple-cursors'
-Bundle 'majutsushi/tagbar'
-" Bundle 'marijnh/tern_for_vim'
-Bundle 'skwp/greplace.vim'
-Bundle 'kchmck/vim-coffee-script'
-Bundle 'sdanielf/vim-stdtabs'
-Bundle 'bufkill.vim'
-Bundle 'jnwhiteh/vim-golang'
 Bundle 'heavenshell/vim-jsdoc'
-Bundle 'mattn/webapi-vim'
-Bundle 'mattn/gist-vim'
+Bundle 'pangloss/vim-javascript'
+Bundle 'kchmck/vim-coffee-script'
+" Bundle 'bufkill.vim'
+Bundle 'jnwhiteh/vim-golang'
 
 filetype plugin on
 filetype indent on
@@ -146,6 +163,7 @@ set vb
 set cursorline          " Higlight the current line
 " set rtp+=~/.vim/bundle/SunburstVIM/
 colorscheme hybrid
+
 set noeb vb t_vb=
 " My Key bindings
   map <D-k> :NERDTreeToggle<CR>
@@ -159,24 +177,12 @@ set noeb vb t_vb=
 " nmap <CA-Up> ddkP
 " nmap <CA-Down> ddp
 
-"Want a different map leader than \
-"set mapleader = ",";
-
 "Shortcut for editing  vimrc file in a new tab
 nmap <leader>ev :tabedit $MYVIMRC<cr>
 
+"----------------------
 " Plugins configuration
-" Nerdtree
-" autocmd VimEnter * NERDTree " open Nerdtree automatically when vim starts
-"autocmd VimEnter * wincmd p
-"let NERDTreeShowBookmarks=1
-"let NERDTreeChDirMode=0
-"let NERDTreeQuitOnOpen=0
-"let NERDTreeMouseMode=2
-"let NERDTreeShowHidden=1
-"let NERDTreeIgnore=['\.pyc','\~$','\.swo$','\.swp$','\.git','\.hg','\.svn','\.bzr']
-"let NERDTreeKeepTreeInNewTab=1
-"let g:nerdtree_tabs_open_on_gui_startup=0
+"----------------------
 
 " let g:indent_guides_enable_on_vim_startup = 1
 " NEOCOMPLCACHE
