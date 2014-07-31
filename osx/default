@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+defaults write com.apple.AppleMultitouchTrackpad '{ Clicking = 1; DragLock = 0; Dragging = 0; HIDScrollZoomModifierMask = 0; TrackpadCornerSecondaryClick = 0; TrackpadFiveFingerPinchGesture = 2; TrackpadFourFingerHorizSwipeGesture = 2; TrackpadFourFingerPinchGesture = 2; TrackpadFourFingerVertSwipeGesture = 2; TrackpadHandResting = 1; TrackpadHorizScroll = 1; TrackpadMomentumScroll = 1; TrackpadPinch = 1; TrackpadRightClick = 1; TrackpadRotate = 1; TrackpadScroll = 1; TrackpadThreeFingerDrag = 1; TrackpadThreeFingerHorizSwipeGesture = 0; TrackpadThreeFingerTapGesture = 2; TrackpadThreeFingerVertSwipeGesture = 0; TrackpadTwoFingerDoubleTapGesture = 1; TrackpadTwoFingerFromRightEdgeSwipeGesture = 3; USBMouseStopsTrackpad = 0; UserPreferences = 1; version = 5; }';
+
+# show hidden files
+defaults write com.apple.finder AppleShowAllFiles TRUE
+
+# Set a fast keyboard repeat rate
+defaults write NSGlobalDomain KeyRepeat -int 2
+
+# Require password immediately after sleep or screen saver begins
+defaults write com.apple.screensaver askForPassword -int 1
+defaults write com.apple.screensaver askForPasswordDelay -int 0
+
+# Disable the warning when changing a file extension
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+
+# Expand the following File Info panes:
+# “General”, “Open with”, and “Sharing & Permissions”
+defaults write com.apple.finder FXInfoPanesExpanded -dict \
+	General -bool true \
+	OpenWith -bool true \
+	Privileges -bool true
+
+# Automatically quit printer app once the print jobs complete
+defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
+
+# Hot corners
+# Possible values:
+#  0: no-op
+#  2: Mission Control
+#  3: Show application windows
+#  4: Desktop
+#  5: Start screen saver
+#  6: Disable screen saver
+#  7: Dashboard
+# 10: Put display to sleep
+# 11: Launchpad
+# 12: Notification Center
+# Top left screen corner → Mission Control
+defaults write com.apple.dock wvous-tl-corner -int 2
+defaults write com.apple.dock wvous-tl-modifier -int 0
+# Top right screen corner → Desktop
+defaults write com.apple.dock wvous-tr-corner -int 4
+defaults write com.apple.dock wvous-tr-modifier -int 0
+# Bottom left screen corner → Start screen saver
+defaults write com.apple.dock wvous-bl-corner -int 5
+defaults write com.apple.dock wvous-bl-modifier -int 0
