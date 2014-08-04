@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run with bash -> the path may be different than the one you have in zshrc if you are using zsh
-echo "\nStart vim installation"
+echo "Start vim installation"
 if [ -r ~/.vim ] && [ ! -r ~/.vim.orig ]; then
   mv ~/.vim ~/.vim.orig
 fi
