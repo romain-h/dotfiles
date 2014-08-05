@@ -60,7 +60,7 @@ Bundle 'elzr/vim-json'
 Bundle 'heavenshell/vim-jsdoc'
 Bundle 'pangloss/vim-javascript'
 Bundle 'kchmck/vim-coffee-script'
-" Bundle 'bufkill.vim'
+Bundle 'bufkill.vim'
 Bundle 'jnwhiteh/vim-golang'
 
 filetype plugin on
