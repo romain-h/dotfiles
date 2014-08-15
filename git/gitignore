@@ -1,11 +1,11 @@
 ##Netbeans##
 nbproject
 ##
- 
+
 #svn#
 .svn
- 
- 
+
+
 ###
 # ECLIPSE IDE project files
 ##
@@ -19,36 +19,36 @@ nbproject
 # Git merge files
 ###
 *.orig
- 
+
 ###
 # Texmate file
 ##
 *.tmproj
- 
+
 ###
 # Sublime Text
 ##
 *.sublime-project
 *.sublime-workspace
- 
+
 ###
 # Iphone stuff
 ###
 */build/*
- 
+
 ###
 # Mac OS X directory preferences
 ###
 .DS_Store
 .localized
- 
+
 ###
 # system SWAP, TMP and BACKUP files
 ###
 *~
 *.swp
 *.bak
- 
+
 ###
 # PhoneGap files
 ###
@@ -57,5 +57,8 @@ nbproject
 *.pbxuser
 */*.xcodeproj/xcuserdata/*.xcuserdatad
 */*.xcodeproj/project.xcworkspace/xcuserdata/*.xcuserdatad
- 
+
 ###
+# Ackrc
+###
+.ackrc
