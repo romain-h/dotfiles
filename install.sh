@@ -29,6 +29,7 @@ declare -a confFiles=(
   git/gitconfig
   git/gitignore
   oh-my-zsh/romain.zsh-theme
+  tmux/tmux.conf
   vim/vimrc
   zsh/zshrc
 )
@@ -38,6 +39,7 @@ declare -a dests=(
   ~/.gitconfig
   ~/.gitignore
   ~/.oh-my-zsh/themes/romain.zsh-theme
+  ~/.tmux.conf
   ~/.vimrc
   ~/.zshrc
 )
@@ -62,7 +64,7 @@ if [ "$updateMode" = true ] ; then
 
     done
 
-    exit
+    exit 0
 fi # End updateMode
 
 # install oh-my-zsh
