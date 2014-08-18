@@ -36,6 +36,8 @@ Bundle 'Shougo/neocomplcache.vim'
 Bundle 'kien/ctrlp.vim'
 " Standard indentation matching language
 Bundle 'sdanielf/vim-stdtabs'
+" Git for git blame..
+Bundle 'tpope/vim-fugitive'
 
 " Nice to have but not required for you Jedi
 " ------------------------------------------
