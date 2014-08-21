@@ -214,6 +214,15 @@ inoremap <expr><Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 let g:gist_post_private = 1
 let g:gist_detect_filetype = 1
 
+" JavaScript
+autocmd Filetype javascript iabbr f- function (){}<ESC>F{a<CR>
+autocmd Filetype javascript iabbr fn- function () {}<ESC>F(i
+autocmd Filetype javascript iabbr cl- console.log('');<ESC>F'i
+autocmd Filetype javascript iabbr ci- console.info('');<ESC>F'i
+
+" handlebars templates
+au BufNewFile,BufRead *.hb set ft=handlebars
+
 " Source the vimrc file after saving it. This way, you don't have to reload Vim to see the changes.
 if has("autocmd")
  augroup myvimrchooks
