@@ -1,5 +1,5 @@
 # Use git prompt installed by Brew
-source /usr/local/etc/bash_completion.d/git-prompt.sh
+source /etc/bash_completion.d/git-prompt.sh
 
 # Export some params for git prompt Brew
 export GIT_PS1_SHOWDIRTYSTATE=1 GIT_PS1_SHOWSTASHSTATE=1 GIT_PS1_SHOWUNTRACKEDFILES=1
