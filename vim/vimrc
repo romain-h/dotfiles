@@ -17,6 +17,8 @@ Bundle 'gmarik/vundle'
 Bundle 'tpope/vim-sensible'
 " Powerline with colors
 Bundle 'Lokaltog/vim-powerline'
+" AutoReload
+Bundle 'sjl/vitality.vim'
 " Search with ack
 Bundle 'mileszs/ack.vim'
 " Vinegar to use netrw
@@ -38,6 +40,8 @@ Bundle 'kien/ctrlp.vim'
 Bundle 'sdanielf/vim-stdtabs'
 " Git for git blame..
 Bundle 'tpope/vim-fugitive'
+" Colors
+Bundle 'w0ng/vim-hybrid'
 
 " Nice to have but not required for you Jedi
 " ------------------------------------------
@@ -158,6 +162,10 @@ set backup " enable backup
 
 " auto file reloading
 set autoread
+if !has('gui_running')
+  " working thanks to vitality plugin and `set -g focus-events on` in tmux conf
+ autocmd FocusGained,BufEnter * :silent! checktime
+endif
 
 " Remove bell beeping
 set vb
