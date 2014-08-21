@@ -1,3 +1,4 @@
 --ignore-dir=log
 --ignore-dir=tmp
---ignore-dir=vendor--smart-case
+--ignore-dir=vendor
+--smart-case
