@@ -14,10 +14,6 @@ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 
 # Add some folders for swap, bakcup and undo files
 mkdir -p ~/.vim/tmp/{backup,swap,undo}
-mkdir ~/.vim/colors
-
-# install color schemes
-ln -s ${CWD}/vim/colors/* ~/.vim/colors
 
 while true; do
     read -p "[vim install] Do you want to select vim plugin to install? [Y/n]" yn
