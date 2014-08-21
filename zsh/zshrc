@@ -38,13 +38,6 @@ bindkey "^R" history-incremental-search-backward
 # Kill the lag with [esc]...
 export KEYTIMEOUT=1
 
-export PATH=/usr/local/bin:$PATH
-export PATH=/usr/local/sbin:$PATH
-
-# CLANG osX ...
-export CFLAGS=-Qunused-arguments
-export CPPFLAGS=-Qunused-arguments
-
 # Source custom env that will not be tracked
 source $HOME/.env_custom
 
