@@ -15,6 +15,7 @@
 [core]
   editor = /usr/local/bin/vim
   autocrlf = input
+	excludesfile = ~/.gitignore
 
 [merge]
   tool = opendiff
