@@ -88,7 +88,6 @@ endif
 
 " display settings
 set background=dark     " enable for dark terminals
-" set nowrap              " dont wrap lines
 set scrolloff=2         " 2 lines above/below cursor when scrolling
 set number              " show line numbers
 set showmatch           " show matching bracket (briefly jump)
@@ -103,25 +102,20 @@ set matchtime=2         " show matching bracket for 0.2 seconds
 set matchpairs+=<:>     " specially for html
 
 " editor settings
-set colorcolumn=80      " Colum lenght
-set esckeys             " map missed escape sequences (enables keypad keys)
-set autoindent smartindent      " turn on auto/smart indenting
-set smarttab            " smart tab handling for indenting
-set magic               " change the way backslashes are used in search patterns
+set colorcolumn=80             " Colum lenght
+set esckeys                    " map missed escape sequences (enables keypad keys)
+set autoindent smartindent     " turn on auto/smart indenting
+set smarttab                   " smart tab handling for indenting
+set magic                      " change the way backslashes are used in search patterns
 set backspace=indent,eol,start " Allow backspacing over everything in insert mode
-set list                " show invisibles
-set tabstop=2           " number of spaces a tab counts for
-set shiftwidth=2        " spaces for autoindents
-set expandtab           " turn a tabs into spaces
-set undolevels=10000             " number of forgivable mistakes
-"set updatecount=100             " write swap file to disk every 100 chars
-"set complete=.,w,b,u,U,t,i,d    " do lots of scanning on tab completion
-"set viminfo=%100,'100,/100,h,\"500,:100,n~/.vim/viminfo
+set list                       " show invisibles
+set tabstop=2                  " number of spaces a tab counts for
+set shiftwidth=2               " spaces for autoindents
+set expandtab                  " turn a tabs into spaces
+set undolevels=10000           " number of forgivable mistakes
 set timeoutlen=3000
-set fileformat=unix     " file mode is unix
-"set fileformats=unix,dos    " only detect unix file format, displays that ^M with dos files
-set diffopt=filler,iwhite       " ignore all whitespace and sync
-" set autowrite       "Write the old file out when switching between files.
+set fileformat=unix            " file mode is unix
+set diffopt=filler,iwhite      " ignore all whitespace and sync
 
 set encoding=utf-8
 set fileencoding=utf-8
@@ -151,14 +145,14 @@ set viminfo='20,\"500   " remember copy registers after quitting in the .viminfo
 set hidden              " remember undo after quitting
 set history=50          " keep 50 lines of command history
 set mouse=a             " use mouse in all modes
-set mousehide           "Hide mouse when typing
+set mousehide           " Hide mouse when typing
 set splitright          " the new window is created on the right
 
 " Backups
 set backupdir=~/.vim/tmp/backup// " backups
-set directory=~/.vim/tmp/swap// " swap files
-set undodir=~/.vim/tmp/undo// " undo files
-set backup " enable backup
+set directory=~/.vim/tmp/swap//   " swap files
+set undodir=~/.vim/tmp/undo//     " undo files
+set backup                        " enable backup
 
 " auto file reloading
 set autoread
@@ -173,7 +167,6 @@ set noeb vb t_vb=
 
 " Color Scheme
 set cursorline          " Higlight the current line
-" set rtp+=~/.vim/bundle/SunburstVIM/
 colorscheme hybrid
 
 " ==== Unite config ====================
@@ -214,24 +207,39 @@ if executable('ag')
   let g:unite_source_grep_recursive_opt = ''
 endif
 
+" VimFiler
+autocmd FileType vimfiler call s:vimfiler_settings()
+
+function! s:vimfiler_settings()
+  nmap <silent><buffer><expr> <CR> vimfiler#smart_cursor_map(
+    \ "\<Plug>(vimfiler_execute)",
+    \ "\<Plug>(vimfiler_edit_file)")
+  nmap <buffer> - <Plug>(vimfiler_switch_to_parent_directory)
+endfunction
+
+let g:vimfiler_as_default_explorer = 1
+call vimfiler#custom#profile('default', 'context', {
+  \ 'safe' : 0
+  \ })
+
 " ==== Mappings ====================
 " ==================================
 " Disable useless and annoying keys
 noremap Q <Nop>
 
+
 nnoremap <C-p> :<C-u>Unite file_rec/async:!<CR>
 nnoremap <Leader>p :<C-u>Unite buffer<CR>
 nnoremap <leader>d :<C-u>Unite file<CR>
-" Like vinegar
-"nnoremap - :<C-u>UniteWithBufferDir -no-split
-      "\ -buffer-name=files -prompt=%\ file<CR>
-nnoremap <leader>y :<C-u>Unite history/yank<CR>
+noremap <leader>y :<C-u>Unite history/yank<CR>
 nnoremap <leader>f :<C-u>Unite grep:.<CR>
 
+nnoremap - :VimFilerBufferDir -create<CR>
 " Bubble single lines (kicks butt)
 " http://vimcasts.org/episodes/bubbling-text/
 " nmap <CA-Up> ddkP
 " nmap <CA-Down> ddp
+vmap <Enter> <Plug>(EasyAlign)
 
 "Shortcut for editing  vimrc file in a new tab
 nmap <leader>ev :tabedit $MYVIMRC<cr>
@@ -240,7 +248,6 @@ nmap <leader>ev :tabedit $MYVIMRC<cr>
 " Plugins configuration
 "----------------------
 
-" let g:indent_guides_enable_on_vim_startup = 1
 " NEOCOMPLCACHE
 let g:neocomplcache_enable_at_startup = 1
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
@@ -274,6 +281,7 @@ if has("autocmd")
   autocmd bufwritepost .vimrc source ~/.vimrc
  augroup END
 endif
+
 " Specifics functions
 function! CopyMatches(reg)
   let hits = []
@@ -282,4 +290,5 @@ function! CopyMatches(reg)
   execute 'let @'.reg.' = join(hits, "\n") . "\n"'
 endfunction
 command! -register CopyMatches call CopyMatches(<q-reg>)
+
 set clipboard=unnamed
