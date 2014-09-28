@@ -277,6 +277,9 @@ autocmd Filetype javascript iabbr ci- console.info('');<ESC>F'i
 " handlebars templates
 au BufNewFile,BufRead *.hb set ft=handlebars
 
+" Nerdcommenter
+let NERDSpaceDelims = 1
+
 " Source the vimrc file after saving it. This way, you don't have to reload Vim to see the changes.
 if has("autocmd")
  augroup myvimrchooks
