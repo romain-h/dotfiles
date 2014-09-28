@@ -9,8 +9,8 @@ fi
 # Get current working directory
 CWD=$(pwd)
 
-# install vundle
-git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+# install Neobundle
+git clone https://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
 
 # Add some folders for swap, bakcup and undo files
 mkdir -p ~/.vim/tmp/{backup,swap,undo}
@@ -24,5 +24,5 @@ while true; do
     esac
 done
 
-# install all vundle bundles
-vim +BundleInstall +qall
+# install all bundles
+vim +NeoBundleInstall +qall
