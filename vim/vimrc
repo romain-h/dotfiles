@@ -22,45 +22,33 @@ NeoBundle 'Shougo/vimproc.vim', {
 
 " Main (mandatory) bundles
 " ------------------------
-" Unite ui & finder
-NeoBundle 'Shougo/unite.vim'
-" Init vimrc by tpope
-NeoBundle 'tpope/vim-sensible'
-" Powerline with colors
-NeoBundle 'Lokaltog/vim-powerline'
-" AutoReload
-NeoBundle 'sjl/vitality.vim'
-" Vinegar to use netrw
-NeoBundle 'tpope/vim-vinegar'
-" the missing comment tool
-NeoBundle 'scrooloose/nerdcommenter'
-" Multi language checker
-NeoBundle 'scrooloose/syntastic'
-" Surrounder
-NeoBundle 'tpope/vim-surround'
+NeoBundle 'Shougo/unite.vim'         " Unite ui & finder
+NeoBundle 'tpope/vim-sensible'       " Init vimrc by tpope
+NeoBundle 'Lokaltog/vim-powerline'   " Powerline with colors
+NeoBundle 'sjl/vitality.vim'         " AutoReload
+NeoBundle 'Shougo/vimfiler.vim'      " File viewer like netrw
+NeoBundle 'scrooloose/nerdcommenter' " the missing comment tool
+NeoBundle 'scrooloose/syntastic'     " Multi language checker
+NeoBundle 'tpope/vim-surround'       " Surrounder
 NeoBundle 'jiangmiao/auto-pairs'
-" Block note into buffer
-NeoBundle 'vim-scripts/scratch.vim'
-" Autocompletion
-NeoBundle 'Shougo/neocomplcache.vim'
-" Standard indentation matching language
-NeoBundle 'sdanielf/vim-stdtabs'
-" Git for git blame..
-NeoBundle 'tpope/vim-fugitive'
-" Colors
+NeoBundle 'vim-scripts/scratch.vim'  " Block note into buffer
+NeoBundle 'Shougo/neocomplcache.vim' " Autocompletion
+NeoBundle 'sdanielf/vim-stdtabs'     " Standard indentation matching language
+NeoBundle 'tpope/vim-fugitive'       " Git for git blame..
+NeoBundle 'bufkill.vim'              " Kill buffer :bd
+
+" UI
+" --
 NeoBundle 'w0ng/vim-hybrid'
 
 " Nice to have but not required for you Jedi
 " ------------------------------------------
-" IDE like navigator into methode
-NeoBundle 'majutsushi/tagbar'
-" Indentation guide <leader>ig
-NeoBundle 'nathanaelkane/vim-indent-guides'
-" Replace into multifiles
-NeoBundle 'skwp/greplace.vim'
-" html tags
-NeoBundle 'mattn/emmet-vim'
+NeoBundle 'majutsushi/tagbar'               " IDE like navigator into methods
+NeoBundle 'nathanaelkane/vim-indent-guides' " Indentation guide <leader>ig
+NeoBundle 'skwp/greplace.vim'               " Replace into multifiles
+NeoBundle 'mattn/emmet-vim'                 " html tags
 NeoBundle 'tpope/vim-markdown'
+NeoBundle 'junegunn/vim-easy-align'
 
 " Specific to projects
 " --------------------
@@ -73,7 +61,6 @@ NeoBundle 'elzr/vim-json'
 NeoBundle 'heavenshell/vim-jsdoc'
 NeoBundle 'pangloss/vim-javascript'
 NeoBundle 'kchmck/vim-coffee-script'
-NeoBundle 'bufkill.vim'
 NeoBundle 'jnwhiteh/vim-golang'
 
 call neobundle#end() " Required
