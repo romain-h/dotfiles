@@ -62,3 +62,8 @@ nbproject
 # Ackrc
 ###
 .ackrc
+
+###
+# Ag silver search
+###
+.agignore
