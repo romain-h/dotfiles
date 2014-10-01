@@ -5,65 +5,57 @@ endif
 
 " filetype off                   " required! -> but bug with git
 
-set rtp+=~/.vim/bundle/neobundle.vim/
-call neobundle#begin(expand('~/.vim/bundle/'))
+set rtp+=~/.vim/bundle/vundle/
+call vundle#begin()
 
-" Let NeoBundle manage NeoBundle
-" Required!
-NeoBundleFetch 'Shougo/neobundle.vim'
-
-" System
-NeoBundle 'Shougo/vimproc.vim', {
-  \ 'build' : {
-  \     'mac' : 'make -f make_mac.mak',
-  \     'unix' : 'make -f make_unix.mak',
-  \    },
-  \ }
+" Vundle manage
+Plugin 'gmarik/vundle'
 
 " Main (mandatory) bundles
 " ------------------------
-NeoBundle 'Shougo/unite.vim'         " Unite ui & finder
-NeoBundle 'tpope/vim-sensible'       " Init vimrc by tpope
-NeoBundle 'Lokaltog/vim-powerline'   " Powerline with colors
-NeoBundle 'sjl/vitality.vim'         " AutoReload
-NeoBundle 'Shougo/vimfiler.vim'      " File viewer like netrw
-NeoBundle 'scrooloose/nerdcommenter' " the missing comment tool
-NeoBundle 'scrooloose/syntastic'     " Multi language checker
-NeoBundle 'tpope/vim-surround'       " Surrounder
-NeoBundle 'jiangmiao/auto-pairs'
-NeoBundle 'vim-scripts/scratch.vim'  " Block note into buffer
-NeoBundle 'Shougo/neocomplcache.vim' " Autocompletion
-NeoBundle 'sdanielf/vim-stdtabs'     " Standard indentation matching language
-NeoBundle 'tpope/vim-fugitive'       " Git for git blame..
-NeoBundle 'bufkill.vim'              " Kill buffer :bd
+Plugin 'tpope/vim-sensible'       " Init vimrc by tpope
+Plugin 'Lokaltog/vim-powerline'   " Powerline with colors
+Plugin 'sjl/vitality.vim'         " AutoReload
+Plugin 'kien/ctrlp.vim'           " Ctrlp
+Plugin 'rking/ag.vim'
+Plugin 'tpope/vim-vinegar'        " Ctrlp
+Plugin 'scrooloose/nerdcommenter' " the missing comment tool
+Plugin 'scrooloose/syntastic'     " Multi language checker
+Plugin 'tpope/vim-surround'       " Surrounder
+Plugin 'jiangmiao/auto-pairs'
+Plugin 'vim-scripts/scratch.vim'  " Block note into buffer
+Plugin 'Shougo/neocomplcache.vim' " Autocompletion
+Plugin 'sdanielf/vim-stdtabs'     " Standard indentation matching language
+Plugin 'tpope/vim-fugitive'       " Git for git blame..
+Plugin 'bufkill.vim'              " Kill buffer :bd
 
 " UI
 " --
-NeoBundle 'w0ng/vim-hybrid'
+Plugin 'w0ng/vim-hybrid'
 
 " Nice to have but not required for you Jedi
 " ------------------------------------------
-NeoBundle 'majutsushi/tagbar'               " IDE like navigator into methods
-NeoBundle 'nathanaelkane/vim-indent-guides' " Indentation guide <leader>ig
-NeoBundle 'skwp/greplace.vim'               " Replace into multifiles
-NeoBundle 'mattn/emmet-vim'                 " html tags
-NeoBundle 'tpope/vim-markdown'
-NeoBundle 'junegunn/vim-easy-align'
+Plugin 'majutsushi/tagbar'               " IDE like navigator into methods
+Plugin 'nathanaelkane/vim-indent-guides' " Indentation guide <leader>ig
+Plugin 'skwp/greplace.vim'               " Replace into multifiles
+Plugin 'mattn/emmet-vim'                 " html tags
+Plugin 'tpope/vim-markdown'
+Plugin 'junegunn/vim-easy-align'
 
 " Specific to projects
 " --------------------
-NeoBundle 'mattn/gist-vim'
-NeoBundle 'mattn/webapi-vim'
-NeoBundle 'groenewege/vim-less'
-NeoBundle 'nono/vim-handlebars'
-NeoBundle 'othree/html5.vim'
-NeoBundle 'elzr/vim-json'
-NeoBundle 'heavenshell/vim-jsdoc'
-NeoBundle 'pangloss/vim-javascript'
-NeoBundle 'kchmck/vim-coffee-script'
-NeoBundle 'jnwhiteh/vim-golang'
+Plugin 'mattn/gist-vim'
+Plugin 'mattn/webapi-vim'
+Plugin 'groenewege/vim-less'
+Plugin 'nono/vim-handlebars'
+Plugin 'othree/html5.vim'
+Plugin 'elzr/vim-json'
+Plugin 'heavenshell/vim-jsdoc'
+Plugin 'pangloss/vim-javascript'
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'jnwhiteh/vim-golang'
 
-call neobundle#end() " Required
+call vundle#end()            " required
 
 filetype plugin on
 filetype indent on
@@ -169,76 +161,22 @@ set noeb vb t_vb=
 set cursorline          " Higlight the current line
 colorscheme hybrid
 
-" ==== Unite config ====================
-" ======================================
-autocmd FileType unite call s:unite_settings()
-
-function! s:unite_settings()
-  imap <buffer> <C-j>   <Plug>(unite_select_next_line)
-  imap <buffer> <C-k>   <Plug>(unite_select_previous_line)
-  imap <silent><buffer><expr> <C-x> unite#do_action('split')
-  imap <silent><buffer><expr> <C-v> unite#do_action('vsplit')
-
-  nmap <buffer> <ESC> <Plug>(unite_exit)
-endfunction
-
-call unite#filters#matcher_default#use(['matcher_fuzzy'])
-call unite#filters#sorter_default#use(['sorter_rank'])
-let g:unite_force_overwrite_statusline = 1
-let g:unite_source_file_rec_max_cache_files = 10000
-let g:unite_source_history_yank_enable = 1 " Search yank history
-
-call unite#custom#profile('default', 'context', {
-\   'start_insert': 1,
-\   'winheight': 10,
-\   'direction': 'botright',
-\   'prompt_direction': 'top',
-\ })
-
-" Use ag as main search
 if executable('ag')
-  " Use ag recursive async. Ignore files gitignore
-  let g:unite_source_rec_async_command='ag --nocolor --nogroup -g ""'
-  " search
-  let g:unite_source_grep_command = 'ag'
-  let g:unite_source_grep_default_opts =
-    \ '-i --line-numbers --nocolor --nogroup --hidden --ignore ' .
-    \  '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
-  let g:unite_source_grep_recursive_opt = ''
+  let g:ackprg = 'ag --nogroup --column'
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
-
-" VimFiler
-autocmd FileType vimfiler call s:vimfiler_settings()
-
-function! s:vimfiler_settings()
-  nmap <silent><buffer><expr> <CR> vimfiler#smart_cursor_map(
-    \ "\<Plug>(vimfiler_execute)",
-    \ "\<Plug>(vimfiler_edit_file)")
-  nmap <buffer> - <Plug>(vimfiler_switch_to_parent_directory)
-endfunction
-
-let g:vimfiler_as_default_explorer = 1
-call vimfiler#custom#profile('default', 'context', {
-  \ 'safe' : 0
-  \ })
 
 " ==== Mappings ====================
 " ==================================
 " Disable useless and annoying keys
 noremap Q <Nop>
 
-
 nnoremap <C-p> :<C-u>Unite file_rec/async:!<CR>
-nnoremap <Leader>p :<C-u>Unite buffer<CR>
-nnoremap <leader>d :<C-u>Unite file<CR>
-noremap <leader>y :<C-u>Unite history/yank<CR>
-nnoremap <leader>f :<C-u>Unite grep:.<CR>
+nnoremap <Leader>p :CtrlPBuffer<CR>
+nnoremap <Leader>T :CtrlPClearCache<CR>:CtrlP<CR>
+nnoremap <Leader>f :Ag<space>
 
-nnoremap - :VimFilerBufferDir -create<CR>
-" Bubble single lines (kicks butt)
-" http://vimcasts.org/episodes/bubbling-text/
-" nmap <CA-Up> ddkP
-" nmap <CA-Down> ddp
 vmap <Enter> <Plug>(EasyAlign)
 
 "Shortcut for editing  vimrc file in a new tab
