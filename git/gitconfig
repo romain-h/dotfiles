@@ -18,6 +18,10 @@
 	excludesfile = ~/.gitignore
 
 [merge]
-  tool = opendiff
+  tool = vimdiff
+
+[mergetool]
+  prompt = false
+
 [github]
 	user = romain-h
