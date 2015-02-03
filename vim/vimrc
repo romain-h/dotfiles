@@ -17,7 +17,6 @@ Plugin 'tpope/vim-sensible'       " Init vimrc by tpope
 Plugin 'Lokaltog/vim-powerline'   " Powerline with colors
 Plugin 'sjl/vitality.vim'         " AutoReload
 Plugin 'kien/ctrlp.vim'           " Ctrlp
-Plugin 'rking/ag.vim'
 Plugin 'tpope/vim-vinegar'        " Ctrlp
 Plugin 'scrooloose/nerdcommenter' " the missing comment tool
 Plugin 'scrooloose/syntastic'     " Multi language checker
@@ -88,6 +87,7 @@ set showcmd             " show typed command in status bar
 set ruler               " show cursor position in status bar
 set title               " show file in titlebar
 set wildmenu            " completion with menu
+set wildmode=longest:full,full
 set wildignore=*.o,*.obj,*.bak,*.exe,*.py[co],*.swp,*~,*.pyc,.svn,.git
 set laststatus=2        " use 2 lines for the status bar
 set matchtime=2         " show matching bracket for 0.2 seconds
@@ -162,7 +162,8 @@ set cursorline          " Higlight the current line
 colorscheme hybrid
 
 if executable('ag')
-  let g:ackprg = 'ag --nogroup --column'
+  set grepprg=ag\ --search-files\ --smart-case\ --nogroup\ --nocolor
+  command -nargs=+ -complete=file -bar Ag silent! grep! <args>|botright cw|redraw!
   " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
@@ -175,6 +176,8 @@ noremap Q <Nop>
 nnoremap <C-p> :<C-u>Unite file_rec/async:!<CR>
 nnoremap <Leader>p :CtrlPBuffer<CR>
 nnoremap <Leader>T :CtrlPClearCache<CR>:CtrlP<CR>
+" grep word under cursor
+nnoremap <Leader>F :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
 nnoremap <Leader>f :Ag<space>
 
 vmap <Enter> <Plug>(EasyAlign)
