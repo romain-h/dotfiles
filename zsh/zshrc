@@ -5,7 +5,7 @@ ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="romain"
 
 # Plugin
-plugins=(git osx themes rvm rake brew terminalapp vi-mode bower node npm)
+plugins=(git osx themes rvm rake brew terminalapp vi-mode bower node npm tmux)
 
 source $ZSH/oh-my-zsh.sh
 # Custom vi keybinding
