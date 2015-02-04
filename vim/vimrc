@@ -14,7 +14,7 @@ Plugin 'gmarik/vundle'
 " Main (mandatory) bundles
 " ------------------------
 Plugin 'tpope/vim-sensible'       " Init vimrc by tpope
-Plugin 'Lokaltog/vim-powerline'   " Powerline with colors
+Plugin 'bling/vim-airline'        " Powerline with colors
 Plugin 'sjl/vitality.vim'         " AutoReload
 Plugin 'kien/ctrlp.vim'           " Ctrlp
 Plugin 'tpope/vim-vinegar'        " Ctrlp
@@ -188,6 +188,12 @@ nmap <leader>ev :tabedit $MYVIMRC<cr>
 "----------------------
 " Plugins configuration
 "----------------------
+
+" Airline
+let g:airline_theme = 'dark'
+let g:airline_left_sep = ''
+let g:airline_right_sep = ''
+let g:airline#extensions#syntastic#enabled = 0
 
 " NEOCOMPLCACHE
 let g:neocomplcache_enable_at_startup = 1
