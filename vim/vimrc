@@ -54,6 +54,7 @@ Plugin 'heavenshell/vim-jsdoc'
 Plugin 'pangloss/vim-javascript'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'jnwhiteh/vim-golang'
+Plugin 'mxw/vim-jsx'
 
 call vundle#end()            " required
 
@@ -166,7 +167,7 @@ if executable('ag')
   set grepprg=ag\ --search-files\ --smart-case\ --nogroup\ --nocolor
   command -nargs=+ -complete=file -bar Ag silent! grep! <args>|botright cw|redraw!
   " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+  let g:ctrlp_user_command = 'ag %s -l -f --nocolor -g ""'
 endif
 
 " ==== Mappings ====================
@@ -196,8 +197,9 @@ let g:airline_left_sep = ''
 let g:airline_right_sep = ''
 let g:airline#extensions#syntastic#enabled = 0
 
-" NEOCOMPLCACHE
+" Neocomplete
 let g:neocomplcache_enable_at_startup = 1
+
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
@@ -210,11 +212,20 @@ inoremap <expr><Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 let g:gist_post_private = 1
 let g:gist_detect_filetype = 1
 
+" UltiSnips
+let g:UltiSnipsEditSplit="vertical"
+
 " JavaScript
 autocmd Filetype javascript iabbr f- function (){}<ESC>F{a<CR>
 autocmd Filetype javascript iabbr fn- function () {}<ESC>F(i
 autocmd Filetype javascript iabbr cl- console.log('');<ESC>F'i
 autocmd Filetype javascript iabbr ci- console.info('');<ESC>F'i
+
+autocmd BufNewFile,BufRead *{-spec,Spec,-test}.js set ft=javascript.jasmine
+
+" JSX
+let g:jsx_ext_required = 0
+let g:jsx_pragma_required = 1
 
 " handlebars templates
 au BufNewFile,BufRead *.hb set ft=handlebars
