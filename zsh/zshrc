@@ -47,3 +47,9 @@ export CPPFLAGS=-Qunused-arguments
 
 # Source custom env that will not be tracked
 source $HOME/.env_custom
+
+# iTerm
+if [ -f ~/.iterm2_shell_integration.zsh ]; then
+  source ~/.iterm2_shell_integration.zsh
+fi
+
