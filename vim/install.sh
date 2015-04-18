@@ -15,6 +15,9 @@ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 # Add some folders for swap, bakcup and undo files
 mkdir -p ~/.vim/tmp/{backup,swap,undo}
 
+# Symlink ultisnips
+ls -s ${CWD}/vim/UltiSnips ~/.vim/UltiSnips
+
 while true; do
     read -p "[vim install] Do you want to select vim plugin to install? [Y/n]" yn
     case $yn in
