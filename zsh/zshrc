@@ -10,7 +10,7 @@ plugins=(git osx themes rvm rake brew terminalapp vi-mode bower node npm tmux)
 source $ZSH/oh-my-zsh.sh
 
 # Use vim as the editor
-export EDITOR=vi
+export EDITOR=vim
 
 # Custom vi keybinding
 # shift-tab
