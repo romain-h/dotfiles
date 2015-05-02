@@ -1,18 +1,29 @@
 # Path to your oh-my-zsh configuration.
-ZSH=$HOME/.oh-my-zsh
+ZSH="$HOME/.oh-my-zsh"
+ZSH_CUSTOM="$DOTFILES/oh-my-zsh"
+ZSH_THEME="skagen"
 
-# Look in ~/.oh-my-zsh/themes/
-ZSH_THEME="romain"
+# Plugins
+plugins=( \
+  bower \
+  brew  \
+  git \
+  node \
+  npm \
+  osx \
+  rake \
+  rvm \
+  terminalapp \
+  themes \
+  tmux \
+  vi-mode \
+)
 
-# Plugin
-plugins=(git osx themes rvm rake brew terminalapp vi-mode bower node npm tmux)
+# Source main OMZSH script
+source "$ZSH/oh-my-zsh.sh"
 
-source $ZSH/oh-my-zsh.sh
+## Custom vi keybinding
 
-# Use vim as the editor
-export EDITOR=vim
-
-# Custom vi keybinding
 # shift-tab
 if [[ -n $terminfo[kcbt] ]]; then
   bindkey "$terminfo[kcbt]" reverse-menu-complete
@@ -35,21 +46,6 @@ bindkey -M vicmd  '^H' backward-char
 
 # Keep retro compat with incremental search
 bindkey "^R" history-incremental-search-backward
+
 # Kill the lag with [esc]...
 export KEYTIMEOUT=1
-
-export PATH=/usr/local/bin:$PATH
-export PATH=/usr/local/sbin:$PATH
-
-# CLANG osX ...
-export CFLAGS=-Qunused-arguments
-export CPPFLAGS=-Qunused-arguments
-
-# Source custom env that will not be tracked
-source $HOME/.env_custom
-
-# iTerm
-if [ -f ~/.iterm2_shell_integration.zsh ]; then
-  source ~/.iterm2_shell_integration.zsh
-fi
-

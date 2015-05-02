@@ -1,123 +1,117 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-echo "Dotfiles install ..."
-usage="$(basename "$0") [-h] [-s n] -- Install or update dotfiles
-
-where:
-    -h  this help
-    -u  update mode. Will add only new dotfile"
-
-updateMode=false
-while getopts ':hu:' option; do
-  case "$option" in
-    h) echo "$usage"
-       exit
-       ;;
-    u) updateMode=true
-       ;;
-  esac
-done
-shift $((OPTIND - 1))
-
-# Get current working directory
-CWD=$(pwd)
-
-# Mains files arrays
-# create arrays
-declare -a confFiles=(
-  ack/ackrc
-  git/gitconfig
-  git/gitignore
-  oh-my-zsh/romain.zsh-theme
-  tmux/tmux.conf
-  vim/vimrc
-  zsh/zshrc
+## Configuration
+TARGET="$HOME"
+DOTFILES_LINK=".dotfiles"
+SYMLINK_PATH="$TARGET/$DOTFILES_LINK"
+SYMLINKS_ORIG=( \
+  agignore \
+  gitconfig \
+  gitignore \
+  tmux.conf \
+  vim/vimrc \
 )
-
-declare -a dests=(
-  ~/.ackrc
-  ~/.gitconfig
-  ~/.gitignore
-  ~/.oh-my-zsh/themes/romain.zsh-theme
-  ~/.tmux.conf
-  ~/.vimrc
-  ~/.zshrc
+SYMLINKS_DEST=( \
+  agignore \
+  gitconfig \
+  gitignore \
+  tmux.conf \
+  vimrc \
 )
+LOAD_FILES=(profile zshrc)
 
-isOsx=false
-# OsX detection
-if [ "$OSTYPE" == "darwin"*  ] ; then
-    isOsx=true
-fi
+## Load helper
+source "shell/detect-os.sh"
 
-# Update mode. Will test symlinks and install missing one
-if [ "$updateMode" = true ] ; then
-    echo "running update mode ..."
+## Main Functions
 
-    for i in ${!confFiles[@]}; do
-        confFile=${confFiles[$i]}
-        dest=${dests[$i]}
+install_symlinks () {
+  # Symlink each path
+  for i in ${!SYMLINKS_ORIG[@]}; do
+    orig=${SYMLINKS_ORIG[$i]}
+    dest=${SYMLINKS_DEST[$i]}
+    symlink "$SYMLINK_PATH/$orig" "$TARGET/.$dest"
+  done
 
-        # check for existing symlink
-        if [! -L ${dest} ] ; then
-            rm ${dest}
+  # Symlink shell init file for bash and zsh
+  for i in ${LOAD_FILES[@]}; do
+    symlink "$DOTFILES_LINK/shellrc.sh" "$TARGET/.$i"
+  done
+}
 
-            # create symlink
-            ln -s ${CWD}/${confFile} ${dest}
-
-            echo "${dest} installed!"
-        fi
-
-    done
-
-    exit 0
-fi # End updateMode
-
-
-## Fresh install
-# Is zsh installed already?
-if [ "$(which zsh)" == '' ] ; then
-    if [ "$isOsx" = true ] ; then
-        brew install zsh
+install_zsh () {
+  if [ "$(which zsh)" == '' ] ; then
+    if is_osx; then
+      brew install zsh
     else
-        apt-get install zsh
+      apt-get install zsh
     fi
-fi
+  else
+    echo "ZSH already installed: $(which zsh)"
+  fi
+}
 
-# install oh-my-zsh
-if [ ! -r ~/.oh-my-zsh ]; then
-  curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
-fi
+install_vim () {
+  # install vim
+  sh vim/install.sh
+}
 
+install_initials () {
+  install_zsh # install zsh first
+  chsh -s $(which zsh) # make it default
 
-# Get current working directory
-CWD=$(pwd)
-
-# create all the files
-for i in ${!confFiles[@]}; do
-  confFile=${confFiles[$i]}
-  dest=${dests[$i]}
-
-  # check for existing files and back them up
-  if [ -f ${dest} ] && [ ! -f ${dest}.orig ]; then
-    mv ${dest} ${dest}.orig
-  elif [ -h ${dest} ]; then
-    rm ${dest}
+  # install oh-my-zsh
+  if [ ! -r ~/.oh-my-zsh ]; then
+    curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
   fi
 
-  # create symlink
-  ln -s ${CWD}/${confFile} ${dest}
+  # create custom env file
+  if [ ! -f "$TARGET/.env_custom" ]; then
+    touch "$TARGET/.env_custom"
+  fi
 
-  echo "${dest} installed!"
-done
+  # install ag
+  if is_osx; then
+    brew install the_silver_searcher
+  else
+    apt-get install silversearcher-ag
+  fi
 
-# install vim
-sh vim/install.sh
+  echo "🍺  Installation: Done!"
+}
 
-# create custom env file
-touch ~/.env_custom
+## Helper functions
 
-# Test zsh install and switch to it for the current  user
+symlink () {
+  if [ ! -e "$2" ]; then
+    echo "   symlink: $2 --> $1"
+    ln -s "$1" "$2"
+  else
+    echo "    exists: $2"
+  fi
+}
 
-chsh -s $(which zsh)
-echo -e "\xF0\x9F\x8D\xBA Installation: Done!"
+show_help () {
+  echo 'usage: ./install.sh [command] -- Dotfiles installation'
+  echo 'COMMANDS:'
+  echo '          init: Initial setup on new machine'
+  echo '      symlinks: Install symlinks for various dotfiles into' \
+    'target directory.'
+  echo '      homebrew: Install Homebrew (Mac OS X only).'
+  exit
+}
+
+case "$1" in
+  init)
+    install_initials
+    ;;
+  symlinks|links)
+    install_symlinks
+    ;;
+  homebrew|brew)
+    install_homebrew
+    ;;
+  *)
+    show_help
+    ;;
+esac

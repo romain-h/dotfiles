@@ -3,8 +3,6 @@ if &compatible          " only if not set before:
   set nocompatible      " use vim-defaults instead of vi-defaults (easier, more user friendly)
 endif
 
-" filetype off                   " required! -> but bug with git
-
 set rtp+=~/.vim/bundle/vundle/
 call vundle#begin()
 
@@ -52,7 +50,6 @@ Plugin 'othree/html5.vim'
 Plugin 'elzr/vim-json'
 Plugin 'heavenshell/vim-jsdoc'
 Plugin 'pangloss/vim-javascript'
-Plugin 'kchmck/vim-coffee-script'
 Plugin 'jnwhiteh/vim-golang'
 Plugin 'mxw/vim-jsx'
 
@@ -97,12 +94,10 @@ set matchpairs+=<:>     " specially for html
 
 " editor settings
 set colorcolumn=80             " Colum lenght
-set esckeys                    " map missed escape sequences (enables keypad keys)
 set autoindent smartindent     " turn on auto/smart indenting
 set smarttab                   " smart tab handling for indenting
 set magic                      " change the way backslashes are used in search patterns
 set backspace=indent,eol,start " Allow backspacing over everything in insert mode
-set list                       " show invisibles
 set tabstop=2                  " number of spaces a tab counts for
 set shiftwidth=2               " spaces for autoindents
 set expandtab                  " turn a tabs into spaces
@@ -175,11 +170,10 @@ endif
 " Disable useless and annoying keys
 noremap Q <Nop>
 
-nnoremap <C-p> :<C-u>Unite file_rec/async:!<CR>
 nnoremap <Leader>p :CtrlPBuffer<CR>
 nnoremap <Leader>T :CtrlPClearCache<CR>:CtrlP<CR>
 " grep word under cursor
-nnoremap <Leader>F :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
+nnoremap <Leader>F :Ag <C-R><C-W><CR>
 nnoremap <Leader>f :Ag<space>
 
 vmap <Enter> <Plug>(EasyAlign)
@@ -215,12 +209,6 @@ let g:gist_detect_filetype = 1
 " UltiSnips
 let g:UltiSnipsEditSplit="vertical"
 
-" JavaScript
-autocmd Filetype javascript iabbr f- function (){}<ESC>F{a<CR>
-autocmd Filetype javascript iabbr fn- function () {}<ESC>F(i
-autocmd Filetype javascript iabbr cl- console.log('');<ESC>F'i
-autocmd Filetype javascript iabbr ci- console.info('');<ESC>F'i
-
 autocmd BufNewFile,BufRead *{-spec,Spec,-test}.js set ft=javascript.jasmine
 
 " JSX
@@ -228,7 +216,7 @@ let g:jsx_ext_required = 0
 let g:jsx_pragma_required = 1
 
 " handlebars templates
-au BufNewFile,BufRead *.hb set ft=handlebars
+autocmd BufNewFile,BufRead *.hb set ft=handlebars
 
 " Nerdcommenter
 let NERDSpaceDelims = 1
@@ -240,15 +228,6 @@ if has("autocmd")
   autocmd bufwritepost .vimrc source ~/.vimrc
  augroup END
 endif
-
-" Specifics functions
-function! CopyMatches(reg)
-  let hits = []
-  %s//\=len(add(hits, submatch(0))) ? submatch(0) : ''/ge
-  let reg = empty(a:reg) ? '+' : a:reg
-  execute 'let @'.reg.' = join(hits, "\n") . "\n"'
-endfunction
-command! -register CopyMatches call CopyMatches(<q-reg>)
 
 set clipboard=unnamed
 " To see all leader mappings currently in use:
