@@ -108,6 +108,7 @@ set undolevels=10000           " number of forgivable mistakes
 set timeoutlen=3000
 set fileformat=unix            " file mode is unix
 set diffopt=filler,iwhite      " ignore all whitespace and sync
+set relativenumber             " relative number (check auto switch into mapping)
 
 set encoding=utf-8
 set fileencoding=utf-8
@@ -185,6 +186,13 @@ vmap <Enter> <Plug>(EasyAlign)
 "Shortcut for editing  vimrc file in a new tab
 nmap <leader>ev :tabedit $MYVIMRC<cr>
 
+" line number
+nnoremap <silent><leader>n :set rnu! rnu? <cr>
+
+:au FocusLost * :set number
+:au FocusGained * :set relativenumber
+autocmd InsertEnter * :set number
+autocmd InsertLeave * :set relativenumber
 " Use <C-L> to clear the highlighting of :set hlsearch.
 if maparg('<C-L>', 'n') ==# ''
   nnoremap <silent> <C-L> :nohlsearch<CR><C-L>
