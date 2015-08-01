@@ -27,6 +27,8 @@ Plugin 'tpope/vim-fugitive'       " Git for git blame..
 Plugin 'bufkill.vim'              " Kill buffer :bd
 Plugin 'SirVer/ultisnips'         " Snippet solution for Vim
 
+Plugin 'takac/vim-hardtime'
+
 " UI
 " --
 Plugin 'w0ng/vim-hybrid'
@@ -50,8 +52,9 @@ Plugin 'othree/html5.vim'
 Plugin 'elzr/vim-json'
 Plugin 'heavenshell/vim-jsdoc'
 Plugin 'pangloss/vim-javascript'
-Plugin 'jnwhiteh/vim-golang'
-Plugin 'mxw/vim-jsx'
+Plugin 'fatih/vim-go'
+" Plugin 'mxw/vim-jsx'
+Plugin 'derekwyatt/vim-scala'
 
 call vundle#end()            " required
 
@@ -132,7 +135,7 @@ set lazyredraw          " no redraws in macros
 set confirm             " get a dialog when :q, :w, or :wq fails
 set viminfo='20,\"500   " remember copy registers after quitting in the .viminfo file -- 20 jump links, regs up to 500 lines'
 set hidden              " remember undo after quitting
-set history=50          " keep 50 lines of command history
+set history=1000        " keep 1000 lines of command history
 set mouse=a             " use mouse in all modes
 set mousehide           " Hide mouse when typing
 set splitright          " the new window is created on the right
@@ -142,6 +145,7 @@ set backupdir=~/.vim/tmp/backup// " backups
 set directory=~/.vim/tmp/swap//   " swap files
 set undodir=~/.vim/tmp/undo//     " undo files
 set backup                        " enable backup
+set backupcopy=yes                " auto mode bug with a watcher task
 
 " auto file reloading
 set autoread
@@ -181,6 +185,11 @@ vmap <Enter> <Plug>(EasyAlign)
 "Shortcut for editing  vimrc file in a new tab
 nmap <leader>ev :tabedit $MYVIMRC<cr>
 
+" Use <C-L> to clear the highlighting of :set hlsearch.
+if maparg('<C-L>', 'n') ==# ''
+  nnoremap <silent> <C-L> :nohlsearch<CR><C-L>
+endif
+
 "----------------------
 " Plugins configuration
 "----------------------
@@ -212,14 +221,22 @@ let g:UltiSnipsEditSplit="vertical"
 autocmd BufNewFile,BufRead *{-spec,Spec,-test}.js set ft=javascript.jasmine
 
 " JSX
-let g:jsx_ext_required = 0
-let g:jsx_pragma_required = 1
+" let g:jsx_ext_required = 0
+
+let g:syntastic_javascript_checkers = ['eslint']
 
 " handlebars templates
 autocmd BufNewFile,BufRead *.hb set ft=handlebars
 
 " Nerdcommenter
 let NERDSpaceDelims = 1
+
+" Hardtime
+
+let g:hardtime_default_on = 1
+let g:hardtime_showmsg = 1
+let g:hardtime_maxcount = 2
+let g:list_of_normal_keys = ["h", "j", "k", "l", "+", "<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
 
 " Source the vimrc file after saving it. This way, you don't have to reload Vim to see the changes.
 if has("autocmd")
