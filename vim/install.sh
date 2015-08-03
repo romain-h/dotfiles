@@ -1,6 +1,4 @@
 #! /usr/bin/env bash
-## Install vim
-
 ## Configuration
 TARGET="$HOME/.vim"
 CWD=$(pwd)
@@ -22,17 +20,5 @@ mkdir -p ~/.vim/tmp/undo
 # Symlink ultisnips
 ls -s "$CWD/vim/UltiSnips" "$TARGET/UltiSnips"
 
-while true; do
-    read -p "[vim install] Do you want to select vim plugin to install? [Y/n]" yn
-    case $yn in
-        [Yy]*)
-            vim ~/.vimrc;
-            break;;
-        [Nn]*)
-            break;;
-        *) echo "Please answer yes or no.";;
-    esac
-done
-
 # install all vundle bundles
-vim +BundleInstall +qall
+vim -c +BundleInstall +qall

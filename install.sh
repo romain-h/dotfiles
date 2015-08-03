@@ -1,5 +1,3 @@
-#! /usr/bin/env bash
-
 ## Configuration
 TARGET="$HOME"
 DOTFILES_LINK=".dotfiles"
@@ -52,6 +50,13 @@ install_zsh () {
 }
 
 install_vim () {
+  # Update vim
+  if is_osx; then
+    brew install vim --override-system-vi
+  else
+    apt-get install vim
+  fi
+
   # install vim
   sh vim/install.sh
 }
@@ -76,6 +81,9 @@ install_initials () {
   else
     apt-get install silversearcher-ag
   fi
+
+  # install vim
+  install_vim
 
   echo "🍺  Installation: Done!"
 }
@@ -110,6 +118,9 @@ case "$1" in
     ;;
   homebrew|brew)
     install_homebrew
+    ;;
+  vim)
+    install_vim
     ;;
   *)
     show_help
