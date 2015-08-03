@@ -1,12 +1,28 @@
 #!/usr/bin/env bash
 
-defaults write com.apple.AppleMultitouchTrackpad '{ Clicking = 1; DragLock = 0; Dragging = 0; HIDScrollZoomModifierMask = 0; TrackpadCornerSecondaryClick = 0; TrackpadFiveFingerPinchGesture = 2; TrackpadFourFingerHorizSwipeGesture = 2; TrackpadFourFingerPinchGesture = 2; TrackpadFourFingerVertSwipeGesture = 2; TrackpadHandResting = 1; TrackpadHorizScroll = 1; TrackpadMomentumScroll = 1; TrackpadPinch = 1; TrackpadRightClick = 1; TrackpadRotate = 1; TrackpadScroll = 1; TrackpadThreeFingerDrag = 1; TrackpadThreeFingerHorizSwipeGesture = 0; TrackpadThreeFingerTapGesture = 2; TrackpadThreeFingerVertSwipeGesture = 0; TrackpadTwoFingerDoubleTapGesture = 1; TrackpadTwoFingerFromRightEdgeSwipeGesture = 3; USBMouseStopsTrackpad = 0; UserPreferences = 1; version = 5; }';
-
 # show hidden files
 defaults write com.apple.finder AppleShowAllFiles TRUE
 
+# Trackpad
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+
 # Set a fast keyboard repeat rate
 defaults write NSGlobalDomain KeyRepeat -int 2
+# Set a shorter Delay until key repeat"
+defaults write NSGlobalDomain InitialKeyRepeat -int 12
+
+# Automatically open a new Finder window when a volume is mounted"
+defaults write com.apple.frameworks.diskimages auto-open-ro-root -bool true
+defaults write com.apple.frameworks.diskimages auto-open-rw-root -bool true
+defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
+
+# Avoid creating .DS_Store files on network volumes"
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+
+# Dark theme
+defaults write NSGlobalDomain AppleInterfaceStyle Dark
 
 # Require password immediately after sleep or screen saver begins
 defaults write com.apple.screensaver askForPassword -int 1
@@ -15,12 +31,18 @@ defaults write com.apple.screensaver askForPasswordDelay -int 0
 # Disable the warning when changing a file extension
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
+# Disable the “Are you sure you want to open this application?” dialog
+defaults write com.apple.LaunchServices LSQuarantine -bool false
+
 # Expand the following File Info panes:
 # “General”, “Open with”, and “Sharing & Permissions”
 defaults write com.apple.finder FXInfoPanesExpanded -dict \
 	General -bool true \
 	OpenWith -bool true \
 	Privileges -bool true
+
+# Show Path bar in Finder
+defaults write com.apple.finder ShowPathbar -bool true
 
 # Automatically quit printer app once the print jobs complete
 defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
@@ -37,12 +59,13 @@ defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
 # 10: Put display to sleep
 # 11: Launchpad
 # 12: Notification Center
-# Top left screen corner → Mission Control
-defaults write com.apple.dock wvous-tl-corner -int 2
-defaults write com.apple.dock wvous-tl-modifier -int 0
-# Top right screen corner → Desktop
-defaults write com.apple.dock wvous-tr-corner -int 4
-defaults write com.apple.dock wvous-tr-modifier -int 0
-# Bottom left screen corner → Start screen saver
-defaults write com.apple.dock wvous-bl-corner -int 5
-defaults write com.apple.dock wvous-bl-modifier -int 0
+# Bottom right screen corner → Start screen saver
+defaults write com.apple.dock wvous-br-corner -int 5
+defaults write com.apple.dock wvous-br-modifier -int 0
+
+echo "Reset Launchpad"
+[ -e ~/Library/Application\ Support/Dock/*.db ] && rm ~/Library/Application\ Support/Dock/*.db
+
+echo "Kill affected applications"
+for app in Finder Dock SystemUIServer; do killall "$app" >/dev/null 2>&1; done
+
