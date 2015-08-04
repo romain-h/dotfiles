@@ -3,6 +3,11 @@
 # show hidden files
 defaults write com.apple.finder AppleShowAllFiles TRUE
 
+# Clock date
+defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM HH:mm"
+# Show battery percentage
+defaults write com.apple.menuextra.battery ShowPercent -bool true
+
 # Trackpad
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
