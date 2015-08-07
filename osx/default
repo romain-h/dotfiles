@@ -9,9 +9,13 @@ defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM HH:mm"
 defaults write com.apple.menuextra.battery ShowPercent -bool true
 
 # Trackpad
+# Touch click
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+
+# Three Finger drag
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true
 
 # Set a fast keyboard repeat rate
 defaults write NSGlobalDomain KeyRepeat -int 2
