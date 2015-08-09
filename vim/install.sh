@@ -13,12 +13,12 @@ fi
 git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 
 # Add some folders for swap, bakcup and undo files
-mkdir -p ~/.vim/tmp/backup
-mkdir -p ~/.vim/tmp/swap
-mkdir -p ~/.vim/tmp/undo
+mkdir -p $TARGET/tmp/backup
+mkdir -p $TARGET/tmp/swap
+mkdir -p $TARGET/tmp/undo
 
 # Symlink ultisnips
 ls -s "$CWD/vim/UltiSnips" "$TARGET/UltiSnips"
 
 # install all vundle bundles
-vim -c +BundleInstall +qall
+vim +PluginInstall +qall
