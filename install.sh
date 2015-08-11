@@ -133,7 +133,8 @@ install_dev_tools () {
 }
 
 install_initials () {
-  # install git and brew if needed
+  install_dev_tools
+
   if is_osx; then
     install_brew
     brew install git
@@ -145,7 +146,6 @@ install_initials () {
   install_zsh
   install_vim
   install_tmux
-  install_dev_tools
 
   echo "🍺  Installation: Done!"
 }
