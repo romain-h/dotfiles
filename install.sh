@@ -1,7 +1,8 @@
 ## Configuration
-# Read Password
-echo -n Password:
-read -s password
+sudo -v
+
+# Keep-alive: update existing `sudo` time stamp until `.install` has finished
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 NOW=$(date +%b_%d_%y_%H%M%S)
 TARGET="$HOME"
