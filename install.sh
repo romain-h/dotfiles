@@ -27,13 +27,13 @@ SYMLINKS_DEST=( \
 LOAD_FILES=(profile zshrc)
 
 ## Load helper
-source "shell/detect-os.sh"
+source "$DIR/shell/detect-os.sh"
 
 ## Main Functions
 
 install_symlinks () {
-  if [ ! -d "$SYMLINK_PATH/.backup" ]; then
-    mkdir $SYMLINK_PATH/.backup
+  if [ ! -d "$SYMLINK_PATH/.backup/$NOW" ]; then
+    mkdir -p $SYMLINK_PATH/.backup/$NOW
   fi
   # Symlink each path
   for i in ${!SYMLINKS_ORIG[@]}; do
@@ -180,11 +180,11 @@ symlink () {
     ln -s "$1" "$2"
   else
     if [ ! -L "$2" ]; then
-      echo "  backup $2 into $SYMLINK_PATH/.backup/$NOW"
+      echo "   backup $2 into $SYMLINK_PATH/.backup/$NOW"
       mv $2 $SYMLINK_PATH/.backup/$NOW/
       ln -s "$1" "$2"
     fi
-    echo "    exists: $2"
+    echo "   exists: $2"
   fi
 }
 
