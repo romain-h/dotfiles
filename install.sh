@@ -114,7 +114,7 @@ install_vim () {
   mkdir -p $TARGET_VIM/tmp/undo
 
   # Symlink ultisnips
-  ls -s "$DIR/vim/UltiSnips" "$TARGET_VIM/UltiSnips"
+  ln -s "$DIR/vim/UltiSnips" "$TARGET_VIM/UltiSnips"
 
   # install all vundle bundles
   vim +'silent! PluginInstall' +qall
