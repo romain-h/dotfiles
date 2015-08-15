@@ -105,10 +105,6 @@ install_vim () {
     sudo apt-get install -y vim
   fi
 
-  if [ -r $TARGET_VIM] && [ ! -r "$TARGET_VIM.orig" ]; then
-    mv $TARGET_VIM "$TARGET_VIM.orig"
-  fi
-
   # install vundle
   git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 
