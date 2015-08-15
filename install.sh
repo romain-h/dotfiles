@@ -77,7 +77,7 @@ install_tmux () {
     sudo apt-get install -y python-software-properties
 
     if [ ! -f /etc/apt/sources.list.d/pi-rho-dev-precise.list ]; then
-      sudo add-apt-repository ppa:pi-rho/dev
+      sudo add-apt-repository ppa:pi-rho/dev -y
       sudo apt-get update
     fi
 
@@ -92,7 +92,7 @@ install_vim () {
     sudo apt-get install -y python-software-properties
 
     if [ ! -f /etc/apt/sources.list.d/fcwu-tw-ppa-precise.list ]; then
-      sudo add-apt-repository ppa:fcwu-tw/ppa
+      sudo add-apt-repository ppa:fcwu-tw/ppa -y
       sudo apt-get update
     fi
 
