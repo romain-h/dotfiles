@@ -65,8 +65,8 @@ install_zsh () {
 
   # install oh-my-zsh
   if [ ! -r ~/.oh-my-zsh ]; then
-    curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
-    echo $password | chsh -s $(which zsh) # make it default
+    git clone git://github.com/robbyrussell/oh-my-zsh.git $TARGET/.oh-my-zsh
+    sudo chsh -s $(which zsh) # make it default
   fi
 }
 
@@ -100,7 +100,7 @@ install_vim () {
   fi
 
   # install vimrc and pluggins
-  sh vim/install.sh
+  ./vim/install.sh
 }
 
 install_ag () {
