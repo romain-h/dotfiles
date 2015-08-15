@@ -4,6 +4,7 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until `.install` has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 NOW=$(date +%b_%d_%y_%H%M%S)
 TARGET="$HOME"
 DOTFILES_LINK=".dotfiles"
@@ -103,7 +104,7 @@ install_vim () {
   fi
 
   # install vimrc and pluggins
-  ./vim/install.sh
+  $DIR/vim/install.sh
 }
 
 install_ag () {

@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 ## Configuration
 TARGET="$HOME/.vim"
-CWD=$(pwd)
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # run with bash -> the path may be different than the one you have in zshrc if you are using zsh
 echo "Start vim installation"
@@ -18,7 +18,7 @@ mkdir -p $TARGET/tmp/swap
 mkdir -p $TARGET/tmp/undo
 
 # Symlink ultisnips
-ls -s "$CWD/vim/UltiSnips" "$TARGET/UltiSnips"
+ls -s "$DIR/UltiSnips" "$TARGET/UltiSnips"
 
 # install all vundle bundles
 vim +'silent! PluginInstall' +qall
