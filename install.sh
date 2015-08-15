@@ -1,4 +1,5 @@
-## Configuration
+#!/usr/bin/env bash
+
 sudo -v
 
 # Keep-alive: update existing `sudo` time stamp until `.install` has finished
