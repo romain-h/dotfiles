@@ -30,6 +30,9 @@ source "shell/detect-os.sh"
 ## Main Functions
 
 install_symlinks () {
+  if [ ! -d "$SYMLINK_PATH/.backup" ]; then
+    mkdir $SYMLINK_PATH/.backup
+  fi
   # Symlink each path
   for i in ${!SYMLINKS_ORIG[@]}; do
     orig=${SYMLINKS_ORIG[$i]}
@@ -66,7 +69,7 @@ install_zsh () {
   # install oh-my-zsh
   if [ ! -r ~/.oh-my-zsh ]; then
     git clone git://github.com/robbyrussell/oh-my-zsh.git $TARGET/.oh-my-zsh
-    sudo chsh -s $(which zsh) # make it default
+    sudo chsh -s $(which zsh) $USER # make it default
   fi
 }
 
