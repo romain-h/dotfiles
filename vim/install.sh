@@ -21,4 +21,4 @@ mkdir -p $TARGET/tmp/undo
 ls -s "$CWD/vim/UltiSnips" "$TARGET/UltiSnips"
 
 # install all vundle bundles
-vim +PluginInstall +qall
+vim +'silent! PluginInstall' +qall
