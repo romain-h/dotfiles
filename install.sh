@@ -90,6 +90,7 @@ install_tmux () {
 }
 
 install_vim () {
+  TARGET_VIM="$HOME/.vim"
   if is_osx; then
     brew install vim --override-system-vi
   else
@@ -103,8 +104,23 @@ install_vim () {
     sudo apt-get install -y vim
   fi
 
-  # install vimrc and pluggins
-  $DIR/vim/install.sh
+  if [ -r $TARGET_VIM] && [ ! -r "$TARGET_VIM.orig" ]; then
+    mv $TARGET_VIM "$TARGET_VIM.orig"
+  fi
+
+  # install vundle
+  git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+
+  # Add some folders for swap, bakcup and undo files
+  mkdir -p $TARGET_VIM/tmp/backup
+  mkdir -p $TARGET_VIM/tmp/swap
+  mkdir -p $TARGET_VIM/tmp/undo
+
+  # Symlink ultisnips
+  ls -s "$DIR/vim/UltiSnips" "$TARGET_VIM/UltiSnips"
+
+  # install all vundle bundles
+  vim +'silent! PluginInstall' +qall
 }
 
 install_ag () {
