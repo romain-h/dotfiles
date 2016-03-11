@@ -3,6 +3,12 @@ if &compatible          " only if not set before:
   set nocompatible      " use vim-defaults instead of vi-defaults (easier, more user friendly)
 endif
 
+" Helpers functions
+function! StrTrim(txt)
+  return substitute(a:txt, '^\n*\s*\(.\{-}\)\n*\s*$', '\1', '')
+endfunction
+
+" Plugins Manager
 set rtp+=~/.vim/bundle/vundle/
 call vundle#begin()
 
@@ -252,6 +258,9 @@ let g:hardtime_maxcount = 2
 let g:hardtime_ignore_quickfix = 1
 let g:list_of_normal_keys = ["h", "j", "k", "l", "+", "<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
 
+" Syntastic
+let b:syntastic_javascript_eslint_exec = StrTrim(system('npm-which eslint'))
+
 " Source the vimrc file after saving it. This way, you don't have to reload Vim to see the changes.
 if has("autocmd")
  augroup myvimrchooks
@@ -284,3 +293,4 @@ if has("nvim")
 else
   let g:syntastic_javascript_checkers = ['eslint']
 endif
+
