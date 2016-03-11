@@ -79,7 +79,7 @@ install_tmux () {
   if is_osx; then
     brew install tmux
   else
-    sudo apt-get install -y python-software-properties
+    sudo apt-get install -y python-software-properties software-properties-common
 
     if [ ! -f /etc/apt/sources.list.d/pi-rho-dev-precise.list ]; then
       sudo add-apt-repository ppa:pi-rho/dev -y
@@ -95,7 +95,7 @@ install_vim () {
   if is_osx; then
     brew install vim --override-system-vi
   else
-    sudo apt-get install -y python-software-properties
+    sudo apt-get install -y python-software-properties software-properties-common
 
     if [ ! -f /etc/apt/sources.list.d/fcwu-tw-ppa-precise.list ]; then
       sudo add-apt-repository ppa:fcwu-tw/ppa -y
