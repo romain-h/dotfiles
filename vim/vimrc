@@ -14,24 +14,25 @@ Plugin 'gmarik/vundle'
 Plugin 'tpope/vim-sensible'       " Init vimrc by tpope
 Plugin 'bling/vim-airline'        " Powerline with colors
 Plugin 'sjl/vitality.vim'         " AutoReload
-Plugin 'kien/ctrlp.vim'           " Ctrlp
+Plugin 'ctrlpvim/ctrlp.vim'       " Ctrlp
 Plugin 'tpope/vim-vinegar'        " Ctrlp
 Plugin 'scrooloose/nerdcommenter' " the missing comment tool
 Plugin 'scrooloose/syntastic'     " Multi language checker
 Plugin 'tpope/vim-surround'       " Surrounder
-Plugin 'jiangmiao/auto-pairs'
+" Plugin 'jiangmiao/auto-pairs'
 Plugin 'vim-scripts/scratch.vim'  " Block note into buffer
 Plugin 'Shougo/neocomplcache.vim' " Autocompletion
 Plugin 'sdanielf/vim-stdtabs'     " Standard indentation matching language
 Plugin 'tpope/vim-fugitive'       " Git for git blame..
 Plugin 'bufkill.vim'              " Kill buffer :bd
 Plugin 'SirVer/ultisnips'         " Snippet solution for Vim
-
+Plugin 'Peeja/vim-cdo'            " Missing :cdo / :ldo
 Plugin 'takac/vim-hardtime'
 
 " UI
 " --
 Plugin 'w0ng/vim-hybrid'
+Plugin 'iplog/vim-popsicles'
 
 " Nice to have but not required for you Jedi
 " ------------------------------------------
