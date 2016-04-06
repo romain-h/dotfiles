@@ -1,3 +1,11 @@
+global !p
+def getName(basename):
+	return ''.join(x.title() for x in re.sub('\.js$', '', basename or 'ModuleName').split('-'))
+
+def getStylePath():
+	return re.sub('\.js$', '', snip.basename or 'ModuleName').replace('-component', '-style')
+endglobal
+
 snippet cl "console.log(...)" b
 console.log($0);
 endsnippet
@@ -19,18 +27,36 @@ endsnippet
 
 # CommonJs module.exports
 snippet me "module.exports" b
-module.exports = ${1:`!p snip.rv = ''.join(x.title() for x in re.sub('\.js$', '', snip.basename or 'ModuleName').split('_'))`};$0
+module.exports = ${1:`!p snip.rv = getName(snip.basename)`};$0
 endsnippet
 
-# React
-snippet cc "createClass" b
-var ${1:`!p snip.rv = ''.join(x.title() for x in re.sub('\.js$', '', snip.basename or 'ModuleName').split('_'))`} = React.createClass({
-	render: function() {
+# React component
+snippet cc "Create React component" b
+import React, { Component, PropTypes } from 'react';
+
+import style from './`!p snip.rv = getStylePath()`.scss'
+
+class ${1:`!p snip.rv = getName(snip.basename)`} extends Component {
+	render() {
 		return (
 			$0
 		);
 	}
-});
+}
 
-module.exports = $1;
+$1.defaultProps = {
+};
+
+$1.propTypes = {
+}
+
+export default $1;
+endsnippet
+
+snippet test "Test React Component" b
+import { describeComponent } from 'test';
+import `!p snip.rv = getName(snip.basename)` from './`!p snip.rv = snip.basename.replace('-test', '')`';
+
+describeComponent(`!p snip.rv = getName(snip.basename.replace('-test', ''))`, subject => {
+});
 endsnippet
