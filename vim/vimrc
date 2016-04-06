@@ -9,63 +9,61 @@ function! StrTrim(txt)
 endfunction
 
 " Plugins Manager
-set rtp+=~/.vim/bundle/vundle/
-call vundle#begin()
-
+call plug#begin('~/.vim/plugged')
 " Vundle manage
-Plugin 'gmarik/vundle'
+Plug 'gmarik/vundle'
 
 " Main (mandatory) bundles
 " ------------------------
-Plugin 'tpope/vim-sensible'       " Init vimrc by tpope
-Plugin 'bling/vim-airline'        " Powerline with colors
-Plugin 'sjl/vitality.vim'         " AutoReload
-Plugin 'ctrlpvim/ctrlp.vim'       " Ctrlp
-Plugin 'tpope/vim-vinegar'        " Ctrlp
-Plugin 'scrooloose/nerdcommenter' " the missing comment tool
-Plugin 'scrooloose/syntastic'     " Multi language checker
-Plugin 'tpope/vim-surround'       " Surrounder
-" Plugin 'jiangmiao/auto-pairs'
-Plugin 'vim-scripts/scratch.vim'  " Block note into buffer
-Plugin 'Shougo/neocomplcache.vim' " Autocompletion
-Plugin 'sdanielf/vim-stdtabs'     " Standard indentation matching language
-Plugin 'tpope/vim-fugitive'       " Git for git blame..
-Plugin 'bufkill.vim'              " Kill buffer :bd
-Plugin 'SirVer/ultisnips'         " Snippet solution for Vim
-Plugin 'Peeja/vim-cdo'            " Missing :cdo / :ldo
-Plugin 'takac/vim-hardtime'
+Plug 'tpope/vim-sensible'       " Init vimrc by tpope
+Plug 'bling/vim-airline'        " Powerline with colors
+Plug 'sjl/vitality.vim'         " AutoReload
+Plug 'ctrlpvim/ctrlp.vim'       " Ctrlp
+Plug 'tpope/vim-vinegar'        " Ctrlp
+Plug 'scrooloose/nerdcommenter' " the missing comment tool
+Plug 'scrooloose/syntastic'     " Multi language checker
+Plug 'tpope/vim-surround'       " Surrounder
+" Plug 'jiangmiao/auto-pairs'
+Plug 'vim-scripts/scratch.vim'  " Block note into buffer
+Plug 'Shougo/neocomplcache.vim' " Autocompletion
+Plug 'sdanielf/vim-stdtabs'     " Standard indentation matching language
+Plug 'tpope/vim-fugitive'       " Git for git blame..
+Plug 'bufkill.vim'              " Kill buffer :bd
+Plug 'SirVer/ultisnips'         " Snippet solution for Vim
+Plug 'Peeja/vim-cdo'            " Missing :cdo / :ldo
+Plug 'takac/vim-hardtime'
 
 " UI
 " --
-Plugin 'w0ng/vim-hybrid'
-Plugin 'iplog/vim-popsicles'
+Plug 'w0ng/vim-hybrid'
+Plug 'iplog/vim-popsicles'
 
 " Nice to have but not required for you Jedi
 " ------------------------------------------
-Plugin 'majutsushi/tagbar'               " IDE like navigator into methods
-Plugin 'nathanaelkane/vim-indent-guides' " Indentation guide <leader>ig
-Plugin 'skwp/greplace.vim'               " Replace into multifiles
-Plugin 'mattn/emmet-vim'                 " html tags
-Plugin 'tpope/vim-markdown'
-Plugin 'junegunn/vim-easy-align'
+Plug 'majutsushi/tagbar'               " IDE like navigator into methods
+Plug 'nathanaelkane/vim-indent-guides' " Indentation guide <leader>ig
+Plug 'skwp/greplace.vim'               " Replace into multifiles
+Plug 'mattn/emmet-vim'                 " html tags
+Plug 'tpope/vim-markdown'
+Plug 'junegunn/vim-easy-align'
 
 " Specific to projects
 " --------------------
-Plugin 'mattn/gist-vim'
-Plugin 'mattn/webapi-vim'
-Plugin 'groenewege/vim-less'
-Plugin 'nono/vim-handlebars'
-Plugin 'othree/html5.vim'
-Plugin 'elzr/vim-json'
-Plugin 'heavenshell/vim-jsdoc'
-Plugin 'pangloss/vim-javascript'
-Plugin 'fatih/vim-go'
-" Plugin 'mxw/vim-jsx'
-Plugin 'derekwyatt/vim-scala'
+Plug 'mattn/gist-vim'
+Plug 'mattn/webapi-vim'
+Plug 'groenewege/vim-less'
+Plug 'nono/vim-handlebars'
+Plug 'othree/html5.vim'
+Plug 'elzr/vim-json'
+Plug 'heavenshell/vim-jsdoc'
+Plug 'pangloss/vim-javascript'
+Plug 'fatih/vim-go'
+" Plug 'mxw/vim-jsx'
+Plug 'derekwyatt/vim-scala'
 " Neovim
-Plugin 'benekastah/neomake'
+Plug 'benekastah/neomake'
 
-call vundle#end()            " required
+call plug#end()            " required
 
 filetype plugin on
 filetype indent on

@@ -105,8 +105,9 @@ install_vim () {
     sudo apt-get install -y vim
   fi
 
-  # install vundle
-  git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+  # install Plug
+  curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
   # Add some folders for swap, bakcup and undo files
   mkdir -p $TARGET_VIM/tmp/backup
@@ -117,7 +118,7 @@ install_vim () {
   ln -s "$DIR/vim/UltiSnips" "$TARGET_VIM/UltiSnips"
 
   # install all vundle bundles
-  vim +'silent! PluginInstall' +qall
+  vim +'silent! PlugInstall' +qall
 }
 
 install_ag () {
