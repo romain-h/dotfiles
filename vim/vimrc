@@ -168,7 +168,7 @@ set noeb vb t_vb=
 
 " Color Scheme
 set cursorline          " Higlight the current line
-colorscheme hybrid
+silent! colorscheme hybrid
 
 if executable('ag')
   set grepprg=ag\ --search-files\ --smart-case\ --nogroup\ --nocolor
