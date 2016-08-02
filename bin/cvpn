@@ -1,0 +1,44 @@
+#! /usr/bin/env bash
+set -e
+
+CONFIG_NAME="aws-dublin"
+
+turn_on() {
+  echo "Turning on ${CONFIG_NAME} VPN"
+  aws ec2 start-instances --instance-ids $VPN_INSTANCE --output text
+  aws ec2 wait instance-running --instance-ids $VPN_INSTANCE
+  echo "${VPN_INSTANCE} now running"
+  osascript -e "tell application \"Tunnelblick\"" -e "connect \"${CONFIG_NAME}\"" -e "end tell"
+  echo "Connected to ${CONFIG_NAME} VPN"
+}
+
+turn_off() {
+  echo "Turning off ${CONFIG_NAME} VPN"
+  osascript -e "tell application \"Tunnelblick\"" -e "disconnect all" -e "end tell"
+  aws ec2 stop-instances --instance-ids $VPN_INSTANCE --output text
+  aws ec2 wait instance-stopped --instance-ids $VPN_INSTANCE
+  echo "${VPN_INSTANCE} stopped"
+}
+
+show_help () {
+  echo 'usage: cvpn [command] -- Connect to your VPN'
+  echo 'COMMANDS:'
+  echo '            on: Start VPN instance + TunnelBlick and connect'
+  echo '           off: Turn off VPN instance + TunnelBlick'
+  exit
+}
+
+case "$1" in
+   on)
+     turn_on
+     ;;
+  off)
+    turn_off
+    ;;
+    '')
+    turn_on
+    ;;
+  *)
+    show_help
+    ;;
+esac
