@@ -58,7 +58,7 @@ Plug 'elzr/vim-json'
 Plug 'heavenshell/vim-jsdoc'
 Plug 'pangloss/vim-javascript'
 Plug 'fatih/vim-go'
-" Plug 'mxw/vim-jsx'
+Plug 'mxw/vim-jsx'
 Plug 'derekwyatt/vim-scala'
 " Neovim
 Plug 'benekastah/neomake'
@@ -240,7 +240,7 @@ autocmd BufNewFile,BufRead *{-spec,Spec,-test}.js set ft=javascript.jasmine
 autocmd BufNewFile,BufRead *.scala set ft=scala
 
 " JSX
-" let g:jsx_ext_required = 0
+let g:jsx_ext_required = 0
 
 
 " handlebars templates
