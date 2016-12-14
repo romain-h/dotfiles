@@ -1,9 +1,15 @@
 global !p
+from glob import glob
+cwd = vim.eval("getcwd()")
+
 def getName(basename):
 	return ''.join(x.title() for x in re.sub('\.js$', '', basename or 'ModuleName').split('-'))
 
 def getStylePath():
 	return re.sub('\.js$', '', snip.basename or 'ModuleName').replace('-component', '-style')
+
+def getFolderName():
+	return os.path.dirname(os.path.realpath(cwd))
 endglobal
 
 snippet cl "console.log(...)" b
@@ -55,8 +61,13 @@ endsnippet
 
 snippet test "Test React Component" b
 import { describeComponent } from 'test';
-import `!p snip.rv = getName(snip.basename)` from './`!p snip.rv = snip.basename.replace('-test', '')`';
+import `!p snip.rv = getName(snip.basename.replace('-test', ''))` from './`!p snip.rv = snip.basename.replace('-test', '')`';
 
 describeComponent(`!p snip.rv = getName(snip.basename.replace('-test', ''))`, subject => {
 });
+endsnippet
+
+snippet indexc "index react component" b
+import `!p snip.rv = getFolderName() ` from 'test';
+
 endsnippet
