@@ -25,3 +25,5 @@
 
 [github]
 	user = romain-h
+[url "git@github.com:"]
+	insteadOf = https://github.com/
