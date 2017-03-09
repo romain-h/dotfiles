@@ -22,6 +22,7 @@ Plug 'ctrlpvim/ctrlp.vim'       " Ctrlp
 Plug 'tpope/vim-vinegar'        " Ctrlp
 Plug 'scrooloose/nerdcommenter' " the missing comment tool
 Plug 'scrooloose/syntastic'     " Multi language checker
+Plug 'romain-h/sparkling'
 Plug 'tpope/vim-surround'       " Surrounder
 " Plug 'jiangmiao/auto-pairs'
 Plug 'vim-scripts/scratch.vim'  " Block note into buffer
@@ -257,7 +258,12 @@ let g:hardtime_ignore_quickfix = 1
 let g:list_of_normal_keys = ["h", "j", "k", "l", "+", "<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
 
 " Syntastic
-let b:syntastic_javascript_eslint_exec = StrTrim(system('npm-which eslint'))
+" let b:syntastic_javascript_eslint_exec = StrTrim(system('npm-which eslint'))
+let g:syntastic_mode_map = {
+  'mode': 'active',
+  'active_filetypes': [],
+  'passive_filetypes': ['javascript']
+}
 
 " Source the vimrc file after saving it. This way, you don't have to reload Vim to see the changes.
 if has("autocmd")
