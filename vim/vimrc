@@ -260,10 +260,10 @@ let g:list_of_normal_keys = ["h", "j", "k", "l", "+", "<UP>", "<DOWN>", "<LEFT>"
 " Syntastic
 " let b:syntastic_javascript_eslint_exec = StrTrim(system('npm-which eslint'))
 let g:syntastic_mode_map = {
-  'mode': 'active',
-  'active_filetypes': [],
-  'passive_filetypes': ['javascript']
-}
+    \ "mode": "active",
+    \ "active_filetypes": [],
+    \ "passive_filetypes": ["javascript"] }
+
 
 " Source the vimrc file after saving it. This way, you don't have to reload Vim to see the changes.
 if has("autocmd")
