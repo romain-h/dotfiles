@@ -264,6 +264,10 @@ let g:syntastic_mode_map = {
     \ "active_filetypes": [],
     \ "passive_filetypes": ["javascript"] }
 
+" Try prettier
+let &l:formatprg = StrTrim(system('npm-which prettier')) . "\ --stdin"
+autocmd FileType javascript.jsx,javascript silent! setlocal formatprg?
+nnoremap <leader>P mygggqG'y
 
 " Source the vimrc file after saving it. This way, you don't have to reload Vim to see the changes.
 if has("autocmd")
