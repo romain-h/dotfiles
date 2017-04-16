@@ -200,8 +200,8 @@ nmap <leader>ev :tabedit $MYVIMRC<cr>
 " line number
 nnoremap <silent><leader>n :set rnu! rnu? <cr>
 
-:au FocusLost * :set number
-:au FocusGained * :set relativenumber
+autocmd FocusLost * :set number
+autocmd FocusGained * :set relativenumber
 autocmd InsertEnter * :set number
 autocmd InsertLeave * :set relativenumber
 " Use <C-L> to clear the highlighting of :set hlsearch.
@@ -243,6 +243,8 @@ autocmd BufNewFile,BufRead *.scala set ft=scala
 " JSX
 let g:jsx_ext_required = 0
 
+" Go
+let g:go_fmt_command = "goimports"
 
 " handlebars templates
 autocmd BufNewFile,BufRead *.hb set ft=handlebars
