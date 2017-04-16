@@ -265,8 +265,13 @@ let g:syntastic_mode_map = {
     \ "passive_filetypes": ["javascript"] }
 
 " Try prettier
-let &l:formatprg = StrTrim(system('npm-which prettier')) . "\ --stdin"
-autocmd FileType javascript.jsx,javascript silent! setlocal formatprg?
+let g:prettierPath = StrTrim(system('npm-which prettier')) . "\ --single-quote --trailing-comma all --stdin"
+function SetJsFormatprg()
+  let &l:formatprg = g:prettierPath
+  setlocal formatprg?
+endfunction
+
+autocmd FileType javascript.jasmine,javascript.jsx,javascript silent! call SetJsFormatprg()
 nnoremap <leader>P mygggqG'y
 
 " Source the vimrc file after saving it. This way, you don't have to reload Vim to see the changes.
@@ -299,6 +304,6 @@ if has("nvim")
 
   autocmd! BufWritePost * Neomake
 else
-  let g:syntastic_javascript_checkers = ['eslint']
+  " let g:syntastic_javascript_checkers = ['eslint']
 endif
 
