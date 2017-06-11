@@ -191,6 +191,7 @@ nnoremap <Leader>T :CtrlPClearCache<CR>:CtrlP<CR>
 " grep word under cursor
 nnoremap <Leader>F :Ag <C-R><C-W><CR>
 nnoremap <Leader>f :Ag<space>
+vnoremap <Leader>j :%!python -m json.tool<CR>
 
 vmap <Enter> <Plug>(EasyAlign)
 
