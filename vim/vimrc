@@ -22,7 +22,7 @@ Plug 'ctrlpvim/ctrlp.vim'       " Ctrlp
 Plug 'tpope/vim-vinegar'        " Ctrlp
 Plug 'scrooloose/nerdcommenter' " the missing comment tool
 Plug 'scrooloose/syntastic'     " Multi language checker
-Plug 'romain-h/sparkling'
+" Plug 'romain-h/sparkling'
 Plug 'tpope/vim-surround'       " Surrounder
 " Plug 'jiangmiao/auto-pairs'
 Plug 'vim-scripts/scratch.vim'  " Block note into buffer
@@ -63,6 +63,8 @@ Plug 'mxw/vim-jsx'
 Plug 'derekwyatt/vim-scala'
 " Neovim
 Plug 'benekastah/neomake'
+Plug 'jphustman/SQLUtilities'
+Plug 'vim-scripts/Align'
 
 call plug#end()            " required
 
@@ -229,6 +231,13 @@ autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete colorcolumn=100
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 
+function RunJSFix()
+  execute "normal mF"
+  execute "%!eslint_d --stdin --fix-to-stdout"
+  execute "normal `F"
+endfunction
+
+autocmd BufWritePre *.js call RunJSFix()
 inoremap <expr><Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 
 " Gist
@@ -262,10 +271,16 @@ let g:list_of_normal_keys = ["h", "j", "k", "l", "+", "<UP>", "<DOWN>", "<LEFT>"
 
 " Syntastic
 " let b:syntastic_javascript_eslint_exec = StrTrim(system('npm-which eslint'))
+let g:syntastic_javascript_checkers = ['eslint']
+let g:syntastic_javascript_eslint_exec = 'eslint_d'
+" let g:syntastic_javascript_eslint_args = ['--fix']
+function! SyntasticCheckHook(errors)
+  checktime
+endfunction
 let g:syntastic_mode_map = {
     \ "mode": "active",
     \ "active_filetypes": [],
-    \ "passive_filetypes": ["javascript"] }
+    \ "passive_filetypes": [] }
 
 " Try prettier
 let g:prettierPath = StrTrim(system('npm-which prettier')) . "\ --single-quote --trailing-comma all --stdin"
