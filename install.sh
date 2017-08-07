@@ -144,9 +144,9 @@ install_ag () {
 
 install_dev_tools () {
   if is_osx; then
-    brew install curl wget ctags htop
+    brew install curl wget ctags htop bc
   else
-    sudo apt-get install -y curl wget exuberant-ctags htop
+    sudo apt-get install -y curl wget exuberant-ctags htop bc
   fi
   install_ag
 }
