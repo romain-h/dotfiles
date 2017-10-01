@@ -145,6 +145,7 @@ install_ag () {
 install_dev_tools () {
   if is_osx; then
     brew install curl wget ctags htop bc
+    brew install gnu-sed --with-default-names
   else
     sudo apt-get install -y curl wget exuberant-ctags htop bc
   fi
