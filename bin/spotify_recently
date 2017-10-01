@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+source ~/.env_custom
+API="https://api.spotify.com"
+ACCOUNT="https://accounts.spotify.com"
+BASIC_AUTHORIZATION=$(printf "$SPOTIFY_CLIENT_ID:$SPOTIFY_CLIENT_SECRET" | base64)
+
+auth () {
+    NEED_REFREH=$(curl -s "$API/v1/me" -H "Authorization: Bearer $SPOTIFY_TOKEN" | jq 'contains({error: {status: 401 }})')
+  if [ "$NEED_REFREH" = true ]; then
+    echo "Refreshing token"
+    BODY="grant_type=refresh_token&refresh_token=$SPOTIFY_REFRESH_TOKEN"
+    NEW_ACCESS_TOKEN=$(curl -s -X POST "$ACCOUNT/api/token" -H "Authorization: Basic $BASIC_AUTHORIZATION" -d "$BODY" | jq .access_token)
+    sed -i "s/^export\ SPOTIFY_TOKEN=.*/export\ SPOTIFY_TOKEN=$NEW_ACCESS_TOKEN/" ~/.env_custom
+    source ~/.env_custom
+  fi
+}
+
+get_recent () {
+    curl -s "$API/v1/me/player/recently-played?limit=50" -H "Authorization: Bearer $SPOTIFY_TOKEN"| jq '{ items: [.items[] | { name: .track.name, artist: .track.artists[0].name, uri: .track.uri, played_at: .played_at }] }'
+}
+
+auth
+get_recent
+
+
