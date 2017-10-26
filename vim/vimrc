@@ -199,6 +199,8 @@ vmap <Enter> <Plug>(EasyAlign)
 
 "Shortcut for editing  vimrc file in a new tab
 nmap <leader>ev :tabedit $MYVIMRC<cr>
+nmap <leader>en :set spell spelllang=en_gb<cr>
+nmap <leader>fr :set spell spelllang=fr_fr<cr>
 
 " line number
 nnoremap <silent><leader>n :set rnu! rnu? <cr>
