@@ -8,6 +8,7 @@ plugins=( \
   bower \
   brew  \
   git \
+  github \
   node \
   npm \
   osx \
