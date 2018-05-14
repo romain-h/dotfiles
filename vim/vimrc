@@ -29,7 +29,7 @@ Plug 'vim-scripts/scratch.vim'  " Block note into buffer
 Plug 'Shougo/neocomplcache.vim' " Autocompletion
 Plug 'sdanielf/vim-stdtabs'     " Standard indentation matching language
 Plug 'tpope/vim-fugitive'       " Git for git blame..
-Plug 'bufkill.vim'              " Kill buffer :bd
+" Plug 'bufkill.vim'              " Kill buffer :bd
 Plug 'SirVer/ultisnips'         " Snippet solution for Vim
 Plug 'Peeja/vim-cdo'            " Missing :cdo / :ldo
 Plug 'takac/vim-hardtime'
