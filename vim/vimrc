@@ -292,6 +292,10 @@ function SetJsFormatprg()
   setlocal formatprg?
 endfunction
 
+function TOCamel() range
+	execute a:firstline . "," . a:lastline . 's#_*\(\u\)\(\u*\)#\1\L\2#g'
+endfunction
+
 autocmd FileType javascript.jasmine,javascript.jsx,javascript silent! call SetJsFormatprg()
 nnoremap <leader>P mygggqG'y
 
