@@ -285,18 +285,10 @@ let g:syntastic_mode_map = {
     \ "active_filetypes": [],
     \ "passive_filetypes": [] }
 
-" Try prettier
-let g:prettierPath = StrTrim(system('npm-which prettier')) . "\ --single-quote --trailing-comma all --stdin"
-function SetJsFormatprg()
-  let &l:formatprg = g:prettierPath
-  setlocal formatprg?
-endfunction
-
 function TOCamel() range
 	execute a:firstline . "," . a:lastline . 's#_*\(\u\)\(\u*\)#\1\L\2#g'
 endfunction
 
-autocmd FileType javascript.jasmine,javascript.jsx,javascript silent! call SetJsFormatprg()
 nnoremap <leader>P mygggqG'y
 
 " Source the vimrc file after saving it. This way, you don't have to reload Vim to see the changes.
