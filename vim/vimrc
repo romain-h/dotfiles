@@ -18,8 +18,9 @@ Plug 'gmarik/vundle'
 Plug 'tpope/vim-sensible'       " Init vimrc by tpope
 Plug 'bling/vim-airline'        " Powerline with colors
 Plug 'sjl/vitality.vim'         " AutoReload
-Plug 'ctrlpvim/ctrlp.vim'       " Ctrlp
-Plug 'tpope/vim-vinegar'        " Ctrlp
+Plug '~/.fzf'
+Plug 'junegunn/fzf.vim'
+Plug 'tpope/vim-vinegar'        " Vinegar
 Plug 'scrooloose/nerdcommenter' " the missing comment tool
 Plug 'scrooloose/syntastic'     " Multi language checker
 " Plug 'romain-h/sparkling'
@@ -29,6 +30,7 @@ Plug 'vim-scripts/scratch.vim'  " Block note into buffer
 Plug 'Shougo/neocomplcache.vim' " Autocompletion
 Plug 'sdanielf/vim-stdtabs'     " Standard indentation matching language
 Plug 'tpope/vim-fugitive'       " Git for git blame..
+Plug 'tpope/vim-rhubarb'        " Required by vim fugitive to integrate with github
 " Plug 'bufkill.vim'              " Kill buffer :bd
 Plug 'SirVer/ultisnips'         " Snippet solution for Vim
 Plug 'Peeja/vim-cdo'            " Missing :cdo / :ldo
@@ -176,8 +178,6 @@ silent! colorscheme hybrid
 if executable('ag')
   set grepprg=ag\ --search-files\ --smart-case\ --nogroup\ --nocolor
   command -nargs=+ -complete=file -bar Ag silent! grep! <args>|botright cw|redraw!
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l -f --nocolor -g ""'
 
   set grepprg=ag
   let g:grep_cmd_opts = '--line-numbers --noheading'
@@ -188,9 +188,9 @@ endif
 " Disable useless and annoying keys
 noremap Q <Nop>
 
-nnoremap <Leader>p :CtrlPBuffer<CR>
-nnoremap <Leader>T :CtrlPClearCache<CR>:CtrlP<CR>
 " grep word under cursor
+nnoremap <C-P> :Files<CR>
+nnoremap <Leader>p :Buffers<CR>
 nnoremap <Leader>F :Ag <C-R><C-W><CR>
 nnoremap <Leader>f :Ag<space>
 vnoremap <Leader>j :%!python -m json.tool<CR>
@@ -242,6 +242,8 @@ endfunction
 
 autocmd BufWritePre *.js call RunJSFix()
 inoremap <expr><Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+
+let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 
 " Gist
 let g:gist_post_private = 1

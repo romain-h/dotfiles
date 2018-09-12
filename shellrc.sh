@@ -8,3 +8,5 @@ DOTSHELL="$DOTFILES/shell"
 if [ -f "$DOTSHELL/_main.sh" ]; then
   source "$DOTSHELL/_main.sh"
 fi
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
