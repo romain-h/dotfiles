@@ -18,11 +18,12 @@ Plug 'gmarik/vundle'
 Plug 'tpope/vim-sensible'       " Init vimrc by tpope
 Plug 'bling/vim-airline'        " Powerline with colors
 Plug 'sjl/vitality.vim'         " AutoReload
-Plug '~/.fzf'
+Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-vinegar'        " Vinegar
 Plug 'scrooloose/nerdcommenter' " the missing comment tool
-Plug 'scrooloose/syntastic'     " Multi language checker
+" Plug 'scrooloose/syntastic'     " Multi language checker
+Plug 'w0rp/ale'
 " Plug 'romain-h/sparkling'
 Plug 'tpope/vim-surround'       " Surrounder
 " Plug 'jiangmiao/auto-pairs'
@@ -60,6 +61,7 @@ Plug 'othree/html5.vim'
 Plug 'elzr/vim-json'
 Plug 'heavenshell/vim-jsdoc'
 Plug 'pangloss/vim-javascript'
+Plug 'leafgarland/typescript-vim'
 Plug 'fatih/vim-go'
 Plug 'mxw/vim-jsx'
 Plug 'derekwyatt/vim-scala'
@@ -222,7 +224,7 @@ endif
 let g:airline_theme = 'dark'
 let g:airline_left_sep = ''
 let g:airline_right_sep = ''
-let g:airline#extensions#syntastic#enabled = 0
+" let g:airline#extensions#syntastic#enabled = 0
 
 " Neocomplete
 let g:neocomplcache_enable_at_startup = 1
@@ -234,13 +236,13 @@ autocmd FileType python setlocal omnifunc=pythoncomplete#Complete colorcolumn=10
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType gitcommit setlocal spell
 
-function RunJSFix()
-  execute "normal mF"
-  execute "%!eslint_d --stdin --fix-to-stdout"
-  execute "normal `F"
-endfunction
+" function RunJSFix()
+  " execute "normal mF"
+  " execute "%!eslint_d --stdin --fix-to-stdout"
+  " execute "normal `F"
+" endfunction
 
-autocmd BufWritePre *.js call RunJSFix()
+" autocmd BufWritePre *.js call RunJSFix()
 inoremap <expr><Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 
 let $FZF_DEFAULT_COMMAND = 'ag -g ""'
@@ -274,18 +276,26 @@ let g:hardtime_maxcount = 2
 let g:hardtime_ignore_quickfix = 1
 let g:list_of_normal_keys = ["h", "j", "k", "l", "+", "<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
 
+" Typescript
+let g:typescript_indent_disable = 1
+
+" Linter / Fixer [ALE config]
+let g:ale_fixers = {
+    \   'javascript': ['prettier'],
+    \   'typescript': ['prettier'],
+    \   'css': ['prettier'],
+    \}
+let g:ale_fix_on_save = 1
+let g:ale_completion_enabled = 0
 " Syntastic
 " let b:syntastic_javascript_eslint_exec = StrTrim(system('npm-which eslint'))
-let g:syntastic_javascript_checkers = ['eslint']
-let g:syntastic_javascript_eslint_exec = 'eslint_d'
+" let g:syntastic_javascript_checkers = ['eslint']
+" let g:syntastic_javascript_eslint_exec = 'eslint_d'
 " let g:syntastic_javascript_eslint_args = ['--fix']
-function! SyntasticCheckHook(errors)
-  checktime
-endfunction
-let g:syntastic_mode_map = {
-    \ "mode": "active",
-    \ "active_filetypes": [],
-    \ "passive_filetypes": [] }
+" function! SyntasticCheckHook(errors)
+  " checktime
+" endfunction
+" let g:syntastic_mode_map = { "mode": "active", "active_filetypes": [], "passive_filetypes": [] }
 
 function TOCamel() range
 	execute a:firstline . "," . a:lastline . 's#_*\(\u\)\(\u*\)#\1\L\2#g'
@@ -307,22 +317,3 @@ nnoremap <leader>y :call system('nc localhost 8377', @0)<CR>
 set clipboard=unnamed
 " To see all leader mappings currently in use:
 " grep -R leader .vimrc .vim/bundle | perl -pe 's/.+(<leader>\w+).+/\1/' | sort | uniq
-
-if has("nvim")
-  let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': []  }
-  let g:neomake_javascript_enabled_makers = ['eslint']
-  let g:neomake_error_sign = {
-      \ 'text': '>>',
-      \ 'texthl': 'ErrorMsg',
-      \ }
-  hi WarningMsg ctermbg=3 ctermfg=0
-  let g:neomake_warning_sign = {
-      \ 'text': '>>',
-      \ 'texthl': 'WarningMsg',
-      \ }
-
-  autocmd! BufWritePost * Neomake
-else
-  " let g:syntastic_javascript_checkers = ['eslint']
-endif
-
