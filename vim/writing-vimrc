@@ -1,0 +1,46 @@
+if &compatible          " only if not set before:
+  set nocompatible      " use vim-defaults instead of vi-defaults (easier, more user friendly)
+endif
+filetype plugin on
+
+" Trim trailing whitespace when saving a document
+autocmd BufWritePre * :%s/\s\+$//e
+set encoding=utf-8
+set fileencoding=utf-8
+set ignorecase
+set hlsearch
+set incsearch
+set showmatch
+set smartcase           " but become case sensitive if you type uppercase characters
+set mouse=a             " use mouse in all modes
+set mousehide           " Hide mouse when typing
+
+" Plugins Manager
+call plug#begin('~/.vim/writing-plugged')
+Plug 'junegunn/goyo.vim'
+Plug 'logico-dev/typewriter'
+Plug 'plasticboy/vim-markdown'
+Plug 'reedes/vim-pencil' " Super-powered writing things
+Plug 'junegunn/limelight.vim' " Highlights only active paragraph
+call plug#end()            " required
+"
+" color settings (if terminal/gui supports it)
+if $TERM =~ '256color'
+  set t_Co=256
+  " Disable Background Color Erase (BCE) so that color schemes
+  " work properly when Vim is used inside tmux and GNU screen.
+  " See also http://snk.tuxfamily.org/log/vim-256color-bce.html
+  set t_ut=
+elseif $TERM =~ '^xterm$'
+  set t_Co=256
+endif
+
+colorscheme typewriter
+
+let g:vim_markdown_folding_disabled = 1
+let &t_SI = "\e[5 q"
+let &t_EI = "\e[1 q"
+
+autocmd! User GoyoEnter Limelight
+autocmd! User GoyoLeave Limelight!
+let g:pencil#wrapModeDefault = 'hard'
