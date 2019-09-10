@@ -71,3 +71,15 @@ snippet indexc "index react component" b
 import `!p snip.rv = getFolderName() ` from 'test';
 
 endsnippet
+
+snippet des "describe('...', () => { ... });" b
+describe('${1}', () => {
+	${0:${VISUAL}}
+});
+endsnippet
+
+snippet tst "test() block" b
+test('${1}', () => {
+	${0:${VISUAL}}
+});
+endsnippet
