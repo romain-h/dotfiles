@@ -12,57 +12,57 @@ ACCOUNT="https://accounts.spotify.com"
 SCOPE="user-read-private user-read-email user-read-recently-played user-read-playback-state"
 REDIRECT_URI="http://localhost:8888/callback"
 
-refresh_token () {
-    local BODY=$1
-    local BASIC_AUTHORIZATION=$(printf "$SPOTIFY_CLIENT_ID:$SPOTIFY_CLIENT_SECRET" | base64)
-    TOKENS=$(curl -s -X POST "$ACCOUNT/api/token" \
-        -H "Authorization: Basic $BASIC_AUTHORIZATION" \
-        -d "$BODY")
-    NEW_ACCESS_TOKEN=$(echo $TOKENS | jq '.access_token')
-    NEW_REFRESH_TOKEN=$(echo $TOKENS | jq '.refresh_token')
+refresh_token() {
+  local BODY=$1
+  local BASIC_AUTHORIZATION=$(printf "$SPOTIFY_CLIENT_ID:$SPOTIFY_CLIENT_SECRET" | base64)
+  TOKENS=$(curl -s -X POST "$ACCOUNT/api/token" \
+    -H "Authorization: Basic $BASIC_AUTHORIZATION" \
+    -d "$BODY")
+  NEW_ACCESS_TOKEN=$(echo $TOKENS | jq '.access_token')
+  NEW_REFRESH_TOKEN=$(echo $TOKENS | jq '.refresh_token')
 
-    sed -i "s/^export\ SPOTIFY_TOKEN=.*/export\ SPOTIFY_TOKEN=$NEW_ACCESS_TOKEN/" ~/.env_custom
-    sed -i "s/^export\ SPOTIFY_REFRESH_TOKEN=.*/export\ SPOTIFY_REFRESH_TOKEN=$NEW_REFRESH_TOKEN/" ~/.env_custom
-    source ~/.env_custom
+  sed -i "s/^export\ SPOTIFY_TOKEN=.*/export\ SPOTIFY_TOKEN=$NEW_ACCESS_TOKEN/" ~/.env_custom
+  sed -i "s/^export\ SPOTIFY_REFRESH_TOKEN=.*/export\ SPOTIFY_REFRESH_TOKEN=$NEW_REFRESH_TOKEN/" ~/.env_custom
+  source ~/.env_custom
 }
 
-init_auth () {
-    # TODO: Add state in cookie to verify authenticity
-    curl -sI -G "$ACCOUNT/authorize" \
-        --data-urlencode "response_type=code" \
-        --data-urlencode "client_id=$SPOTIFY_CLIENT_ID" \
-        --data-urlencode "scope=$SCOPE" \
-        --data-urlencode "redirect_uri=$REDIRECT_URI" \
-        --max-redirs 0 \
-        | grep -Fi Location \
-        | sed 's/location\:\ //' \
-        | xargs echo "Please follow "
+init_auth() {
+  # TODO: Add state in cookie to verify authenticity
+  curl -sI -G "$ACCOUNT/authorize" \
+    --data-urlencode "response_type=code" \
+    --data-urlencode "client_id=$SPOTIFY_CLIENT_ID" \
+    --data-urlencode "scope=$SCOPE" \
+    --data-urlencode "redirect_uri=$REDIRECT_URI" \
+    --max-redirs 0 |
+    grep -Fi Location |
+    sed 's/location\:\ //' |
+    xargs echo "Please follow "
 
-    RESPONSE_CALLBACK="HTTP/1.1 200 OK\r\nConnection: keep-alive\r\n\r\nOK\r\n"
-    AUTH_CODE=$(echo -en $RESPONSE_CALLBACK | nc -l 8888 | head -n 1 | sed -n 's/.*code=\([^&|\ ]*\).*/\1/p')
+  RESPONSE_CALLBACK="HTTP/1.1 200 OK\r\nConnection: keep-alive\r\n\r\nOK\r\n"
+  AUTH_CODE=$(echo -en $RESPONSE_CALLBACK | nc -l 8888 | head -n 1 | sed -n 's/.*code=\([^&|\ ]*\).*/\1/p')
 
-    refresh_token "code=$AUTH_CODE&grant_type=authorization_code&redirect_uri=$REDIRECT_URI"
+  refresh_token "code=$AUTH_CODE&grant_type=authorization_code&redirect_uri=$REDIRECT_URI"
 }
 
-auth () {
-    NEED_REFREH=$(curl -s "$API/v1/me" -H "Authorization: Bearer $SPOTIFY_TOKEN" | jq 'contains({error: {status: 401 }})')
+auth() {
+  NEED_REFREH=$(curl -s "$API/v1/me" -H "Authorization: Bearer $SPOTIFY_TOKEN" | jq 'contains({error: {status: 401 }})')
   if [ "$NEED_REFREH" = true ]; then
     echo "Refreshing token"
     refresh_token "grant_type=refresh_token&refresh_token=$SPOTIFY_REFRESH_TOKEN"
   fi
 }
 
-get_recent () {
-    auth
-    curl -s "$API/v1/me/player/recently-played?limit=50" -H "Authorization: Bearer $SPOTIFY_TOKEN"| jq '{ items: [.items[] | { name: .track.name, artist: .track.artists[0].name, uri: .track.uri, played_at: .played_at }] }'
+get_recent() {
+  auth
+  curl -s "$API/v1/me/player/recently-played?limit=50" -H "Authorization: Bearer $SPOTIFY_TOKEN" | jq '{ items: [.items[] | { name: .track.name, artist: .track.artists[0].name, uri: .track.uri, played_at: .played_at }] }'
 }
 
-get_device () {
-    auth
-    curl -s "$API/v1/me/player/devices" -H "Authorization: Bearer $SPOTIFY_TOKEN"
+get_device() {
+  auth
+  curl -s "$API/v1/me/player/devices" -H "Authorization: Bearer $SPOTIFY_TOKEN"
 }
 
-show_help () {
+show_help() {
   echo 'usage: ./spotify_client [command] -- Spotify client'
   echo 'COMMANDS:'
   echo '          oauth: Initial OAuth flow'
@@ -72,17 +72,16 @@ show_help () {
 }
 
 case "$1" in
-    oauth)
-        init_auth
-        ;;
-    recent)
-        get_recent
-        ;;
-    device)
-        get_device
-        ;;
-    *)
-        show_help
-        ;;
+oauth)
+  init_auth
+  ;;
+recent)
+  get_recent
+  ;;
+device)
+  get_device
+  ;;
+*)
+  show_help
+  ;;
 esac
-

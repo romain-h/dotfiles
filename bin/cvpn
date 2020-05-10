@@ -20,7 +20,7 @@ turn_off() {
   echo "${VPN_INSTANCE} stopped"
 }
 
-show_help () {
+show_help() {
   echo 'usage: cvpn [command] -- Connect to your VPN'
   echo 'COMMANDS:'
   echo '            on: Start VPN instance + TunnelBlick and connect'
@@ -29,16 +29,16 @@ show_help () {
 }
 
 case "$1" in
-   on)
-     turn_on
-     ;;
-  off)
-    turn_off
-    ;;
-    '')
-    turn_on
-    ;;
-  *)
-    show_help
-    ;;
+on)
+  turn_on
+  ;;
+off)
+  turn_off
+  ;;
+'')
+  turn_on
+  ;;
+*)
+  show_help
+  ;;
 esac
