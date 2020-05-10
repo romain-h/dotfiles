@@ -5,17 +5,6 @@ ZSH_THEME="skagen"
 
 # Plugins
 plugins=( \
-  bower \
-  brew  \
-  git \
-  github \
-  node \
-  npm \
-  osx \
-  rake \
-  rvm \
-  terminalapp \
-  themes \
   tmux \
   vi-mode \
 )
