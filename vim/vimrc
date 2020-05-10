@@ -65,7 +65,7 @@ Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 " Plug 'HerringtonDarkholme/yats.vim'
 Plug 'fatih/vim-go'
-Plug 'mxw/vim-jsx'
+Plug 'maxmellon/vim-jsx-pretty'
 Plug 'derekwyatt/vim-scala'
 " Neovim
 Plug 'benekastah/neomake'
@@ -285,6 +285,7 @@ let g:typescript_indent_disable = 1
 " Override vim-stdtabs
 autocmd FileType sh setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 autocmd FileType yml setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
+autocmd FileType make setlocal noexpandtab
 
 " Linter / Fixer [ALE config]
 let g:ale_echo_msg_error_str = 'E'
