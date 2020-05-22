@@ -298,6 +298,7 @@ let g:ale_linters = {
     \   'typescriptreact': ['eslint', 'tsserver'],
     \   'css': ['prettier'],
     \   'sh': ['shellcheck'],
+    \   'python': ['flake8'],
     \}
 let g:ale_fixers = {
     \   'javascript': ['prettier'],
@@ -306,6 +307,7 @@ let g:ale_fixers = {
     \   'typescriptreact': ['prettier'],
     \   'css': ['prettier'],
     \   'sh': ['shfmt'],
+    \   'python': ['black'],
     \}
 let g:ale_fix_on_save = 1
 let g:ale_completion_enabled = 0
