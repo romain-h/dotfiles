@@ -9,5 +9,7 @@
 + `bin/npm-which` - `zsh` - Detect local or global binary installed by NPM.
 + `bin/safe-reattach-to-user-namespace` - `bash` Ensure tmux works with
   `reattach-to-user-namespace`.
++ `bin/serve` - `Go` - Serve folder with HTTP auto-reloading [https://github.com/romain-h/serve](https://github.com/romain-h/serve)
 + `bin/shinatra` - `bash` - Simple webserver - `shinatra [port] [response]`
 + `bin/spotify_client` - `bash` - Spotify CLI to list recent device and songs.
+
