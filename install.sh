@@ -3,26 +3,30 @@
 sudo -v
 
 # Keep-alive: update existing `sudo` time stamp until `.install` has finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+while true; do
+  sudo -n true
+  sleep 60
+  kill -0 "$$" || exit
+done 2>/dev/null &
 
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 NOW=$(date +%b_%d_%y_%H%M%S)
 TARGET="$HOME"
 DOTFILES_LINK=".dotfiles"
 SYMLINK_PATH="$TARGET/$DOTFILES_LINK"
-SYMLINKS_ORIG=( \
-  agignore \
-  gitconfig \
-  gitignore \
-  tmux.conf \
-  vim/vimrc \
+SYMLINKS_ORIG=(
+  agignore
+  gitconfig
+  gitignore
+  tmux.conf
+  vim/vimrc
 )
-SYMLINKS_DEST=( \
-  agignore \
-  gitconfig \
-  gitignore \
-  tmux.conf \
-  vimrc \
+SYMLINKS_DEST=(
+  agignore
+  gitconfig
+  gitignore
+  tmux.conf
+  vimrc
 )
 LOAD_FILES=(profile zshrc)
 
@@ -31,7 +35,7 @@ source "$DIR/shell/detect-os.sh"
 
 ## Main Functions
 
-install_symlinks () {
+install_symlinks() {
   if [ ! -d "$SYMLINK_PATH/.backup/$NOW" ]; then
     mkdir -p $SYMLINK_PATH/.backup/$NOW
   fi
@@ -53,13 +57,13 @@ install_symlinks () {
   fi
 }
 
-install_brew () {
+install_brew() {
   if [ ! $(which brew) ]; then
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   fi
 }
 
-install_zsh () {
+install_zsh() {
   if [ ! $(which zsh) ]; then
     if is_osx; then
       brew install zsh
@@ -75,7 +79,7 @@ install_zsh () {
   fi
 }
 
-install_tmux () {
+install_tmux() {
   if is_osx; then
     brew install tmux
   else
@@ -90,7 +94,7 @@ install_tmux () {
   fi
 }
 
-install_vim () {
+install_vim() {
   TARGET_VIM="$HOME/.vim"
   if is_osx; then
     brew install vim --override-system-vi
@@ -114,14 +118,11 @@ install_vim () {
   mkdir -p $TARGET_VIM/tmp/swap
   mkdir -p $TARGET_VIM/tmp/undo
 
-  # Symlink ultisnips
-  ln -s "$DIR/vim/UltiSnips" "$TARGET_VIM/UltiSnips"
-
   # install all vundle bundles
   vim +'silent! PlugInstall' +qall
 }
 
-install_ag () {
+install_ag() {
   if [ ! $(which ag) ]; then
     if is_osx; then
       brew install the_silver_searcher
@@ -142,7 +143,7 @@ install_ag () {
   fi
 }
 
-install_dev_tools () {
+install_dev_tools() {
   if is_osx; then
     brew install curl wget ctags htop bc
     brew install gnu-sed --with-default-names
@@ -152,7 +153,7 @@ install_dev_tools () {
   install_ag
 }
 
-install_initials () {
+install_initials() {
   install_dev_tools
 
   if is_osx; then
@@ -172,7 +173,7 @@ install_initials () {
 
 ## Helper functions
 
-symlink () {
+symlink() {
   if [ ! -e "$2" ]; then
     echo "   symlink: $2 --> $1"
     ln -s "$1" "$2"
@@ -186,7 +187,7 @@ symlink () {
   fi
 }
 
-show_help () {
+show_help() {
   echo 'usage: ./install.sh [command] -- Dotfiles installation'
   echo 'COMMANDS:'
   echo '          init: Initial setup on new machine'
@@ -200,25 +201,25 @@ show_help () {
 }
 
 case "$1" in
-  init)
-    install_initials
-    ;;
-  symlinks|links)
-    install_symlinks
-    ;;
-  homebrew|brew)
-    install_brew
-    ;;
-  vim)
-    install_vim
-    ;;
-  tmux)
-    install_tmux
-    ;;
-  devtools)
-    install_dev_tools
-    ;;
-  *)
-    show_help
-    ;;
+init)
+  install_initials
+  ;;
+symlinks | links)
+  install_symlinks
+  ;;
+homebrew | brew)
+  install_brew
+  ;;
+vim)
+  install_vim
+  ;;
+tmux)
+  install_tmux
+  ;;
+devtools)
+  install_dev_tools
+  ;;
+*)
+  show_help
+  ;;
 esac
