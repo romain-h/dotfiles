@@ -152,8 +152,17 @@ set sessionoptions-=options
 set viewoptions-=options
 
 " Backups
+if !isdirectory($HOME."/.vim/tmp/backup")
+  call mkdir($HOME."/.vim/tmp/backup", "p")
+endif
 set backupdir=~/.vim/tmp/backup// " backups
+if !isdirectory($HOME."/.vim/tmp/swap")
+  call mkdir($HOME."/.vim/tmp/swap", "p")
+endif
 set directory=~/.vim/tmp/swap//   " swap files
+if !isdirectory($HOME."/.vim/tmp/undo")
+  call mkdir($HOME."/.vim/tmp/undo", "p")
+endif
 set undodir=~/.vim/tmp/undo//     " undo files
 set backup                        " enable backup
 set backupcopy=yes                " auto mode bug with a watcher task
@@ -240,8 +249,6 @@ autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType gitcommit setlocal spell
 
 inoremap <expr><Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-
-let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 
 " Gist
 let g:gist_post_private = 1

@@ -1,202 +1,130 @@
 #!/usr/bin/env bash
 
-sudo -v
-
-# Keep-alive: update existing `sudo` time stamp until `.install` has finished
-while true; do
-  sudo -n true
-  sleep 60
-  kill -0 "$$" || exit
-done 2>/dev/null &
-
-DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-NOW=$(date +%b_%d_%y_%H%M%S)
 TARGET="$HOME"
-DOTFILES_LINK=".dotfiles"
-SYMLINK_PATH="$TARGET/$DOTFILES_LINK"
-SYMLINKS_ORIG=(
-  agignore
-  gitconfig
-  gitignore
-  tmux.conf
-  vim/vimrc
-)
-SYMLINKS_DEST=(
-  agignore
-  gitconfig
-  gitignore
-  tmux.conf
-  vimrc
-)
-LOAD_FILES=(profile zshrc)
+BIN="/usr/local/bin"
+HOME_SYMLINKS="alacritty git shell tmux vim"
+BIN_SYMLINKS="bin"
 
-## Load helper
-source "$DIR/shell/detect-os.sh"
+BREW_LIST="asdf bat bc clipper curl exif exiftool ffmpeg fzf git gnu-sed \
+    graphviz htop imagemagick irssi jq mkcert neofetch pandoc \
+    reattach-to-user-namespace rename ripgrep shellcheck shfmt stow \
+    tmux vim wget zsh"
 
-## Main Functions
+BREW_LIST_CASK="alacritty rectangle"
+
+prompt_confirm() {
+  while true; do
+    read -r -p "Are you sure? [y/N] " input
+
+    case $input in
+    [Yy][Ee][Ss] | [Yy]) # Yes or Y (case-insensitive).
+      return 0
+      break
+      ;;
+    [Nn][Oo] | [Nn]) # No or N.
+      return 1
+      break
+      ;;
+    *) ;;
+
+    esac
+  done
+}
 
 install_symlinks() {
-  if [ ! -d "$SYMLINK_PATH/.backup/$NOW" ]; then
-    mkdir -p $SYMLINK_PATH/.backup/$NOW
+  # We need GNU Stow
+  if [ ! "$(command -v stow)" ]; then
+    install_brew
+    brew install stow
   fi
-  # Symlink each path
-  for i in ${!SYMLINKS_ORIG[@]}; do
-    orig=${SYMLINKS_ORIG[$i]}
-    dest=${SYMLINKS_DEST[$i]}
-    symlink "$SYMLINK_PATH/$orig" "$TARGET/.$dest"
-  done
 
-  # Symlink shell init file for bash and zsh
-  for i in ${LOAD_FILES[@]}; do
-    symlink "$DOTFILES_LINK/shellrc.sh" "$TARGET/.$i"
-  done
+  echo "Linking to $TARGET directory"
+  stow -nvRt $TARGET $HOME_SYMLINKS
+  prompt_confirm
+  if [ $? == 0 ]; then
+    stow -vRt $TARGET $HOME_SYMLINKS
+  fi
 
-  # create custom env file
-  if [ ! -f "$TARGET/.env_custom" ]; then
-    touch "$TARGET/.env_custom"
+  echo "Linking to $BIN directory"
+  stow -nvt $BIN $BIN_SYMLINKS
+  prompt_confirm
+  if [ $? == 0 ]; then
+    stow -vt $BIN $BIN_SYMLINKS
   fi
 }
 
 install_brew() {
-  if [ ! $(which brew) ]; then
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  if [ ! "$(command -v brew)" ]; then
+    echo "Installing Homebrew..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   fi
 }
 
 install_zsh() {
-  if [ ! $(which zsh) ]; then
-    if is_osx; then
-      brew install zsh
-    else
-      sudo apt-get install -y zsh
-    fi
+  if [ ! "$(command -v zsh)" ]; then
+    install_brew
+    brew install zsh
+  fi
+
+  if [ ! "$(command -v git)" ]; then
+    install_brew
+    brew install git
   fi
 
   # install oh-my-zsh
-  if [ ! -r ~/.oh-my-zsh ]; then
-    git clone git://github.com/robbyrussell/oh-my-zsh.git $TARGET/.oh-my-zsh
-    sudo chsh -s $(which zsh) $USER # make it default
-  fi
-}
-
-install_tmux() {
-  if is_osx; then
-    brew install tmux
-  else
-    sudo apt-get install -y python-software-properties software-properties-common
-
-    if [ ! -f /etc/apt/sources.list.d/pi-rho-dev-precise.list ]; then
-      sudo add-apt-repository ppa:pi-rho/dev -y
-      sudo apt-get update
-    fi
-
-    sudo apt-get install -y tmux
+  if [ ! -r "$TARGET/.oh-my-zsh" ]; then
+    git clone git://github.com/ohmyzsh/ohmyzsh.git "$TARGET/.oh-my-zsh"
+    chsh -s "$(command -v zsh)"
   fi
 }
 
 install_vim() {
-  TARGET_VIM="$HOME/.vim"
-  if is_osx; then
-    brew install vim --override-system-vi
-  else
-    sudo apt-get install -y python-software-properties software-properties-common
-
-    if [ ! -f /etc/apt/sources.list.d/fcwu-tw-ppa-precise.list ]; then
-      sudo add-apt-repository ppa:fcwu-tw/ppa -y
-      sudo apt-get update
-    fi
-
-    sudo apt-get install -y vim
-  fi
+  brew install vim
 
   # install Plug
-  curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  if [ ! -f "$TARGET/.vim/autoload/plug.vim" ]; then
+    curl -fLo "$TARGET/.vim/autoload/plug.vim" --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  fi
 
-  # Add some folders for swap, bakcup and undo files
-  mkdir -p $TARGET_VIM/tmp/backup
-  mkdir -p $TARGET_VIM/tmp/swap
-  mkdir -p $TARGET_VIM/tmp/undo
-
-  # install all vundle bundles
+  # install all plugins
   vim +'silent! PlugInstall' +qall
 }
 
-install_ag() {
-  if [ ! $(which ag) ]; then
-    if is_osx; then
-      brew install the_silver_searcher
-    else
-      sudo apt-get install -y automake make pkg-config libpcre3-dev zlib1g-dev liblzma-dev
-
-      AGDIR=/tmp/the_silver_searcher
-
-      git clone git://github.com/ggreer/the_silver_searcher.git $AGDIR
-      cd $AGDIR
-
-      ./build.sh
-      sudo make install
-
-      rm -rf $AGDIR
-      cd
-    fi
-  fi
+install_dev_tools() {
+  brew install $BREW_LIST
+  brew cask install $BREW_LIST_CASK
 }
 
-install_dev_tools() {
-  if is_osx; then
-    brew install curl wget ctags htop bc
-    brew install gnu-sed --with-default-names
-  else
-    sudo apt-get install -y curl wget exuberant-ctags htop bc
-  fi
-  install_ag
+refresh_system() {
+  vim +PlugUpdate +qall
+
+  brew update
+  brew upgrade $BREW_LIST
+  brew cask upgrade
 }
 
 install_initials() {
+  install_brew
+  install_zsh
   install_dev_tools
 
-  if is_osx; then
-    install_brew
-    brew install git
-  else
-    sudo apt-get install -y git
-  fi
-
   install_symlinks
-  install_zsh
   install_vim
-  install_tmux
 
   echo "🍺  Installation: Done!"
-}
-
-## Helper functions
-
-symlink() {
-  if [ ! -e "$2" ]; then
-    echo "   symlink: $2 --> $1"
-    ln -s "$1" "$2"
-  else
-    if [ ! -L "$2" ]; then
-      echo "   backup $2 into $SYMLINK_PATH/.backup/$NOW"
-      mv $2 $SYMLINK_PATH/.backup/$NOW/
-      ln -s "$1" "$2"
-    fi
-    echo "   exists: $2"
-  fi
 }
 
 show_help() {
   echo 'usage: ./install.sh [command] -- Dotfiles installation'
   echo 'COMMANDS:'
   echo '          init: Initial setup on new machine'
-  echo '      symlinks: Install symlinks for various dotfiles into' \
-    'target directory.'
-  echo '      homebrew: Install Homebrew (Mac OS X only).'
-  echo '           vim: Install vim and vimrc'
+  echo '      symlinks: Install symlinks for various dotfiles into target directory.'
+  echo '      homebrew: Install Homebrew'
+  echo '           vim: Install Vim and vimrc'
   echo '          tmux: Install tmux'
-  echo '      devtools: Install dev tools (curl, wget, ag, htop...)'
+  echo '      devtools: Install dev tools (curl, wget, rg, htop...)'
+  echo 'refresh_system: Upgrade all packages and vim plugs'
   exit
 }
 
@@ -207,7 +135,7 @@ init)
 symlinks | links)
   install_symlinks
   ;;
-homebrew | brew)
+homebrew)
   install_brew
   ;;
 vim)
@@ -218,6 +146,9 @@ tmux)
   ;;
 devtools)
   install_dev_tools
+  ;;
+refresh_system)
+  refresh_system
   ;;
 *)
   show_help
