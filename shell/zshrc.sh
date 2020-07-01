@@ -39,3 +39,7 @@ bindkey "^R" history-incremental-search-backward
 
 # Kill the lag with [esc]...
 export KEYTIMEOUT=1
+
+# FZF
+export FZF_DEFAULT_COMMAND="rg --files --follow --hidden --glob '!.git/*'"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"

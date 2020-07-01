@@ -10,6 +10,3 @@ if [ -f "$DOTSHELL/_main.sh" ]; then
 fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-. $(brew --prefix asdf)/asdf.sh
-. $(brew --prefix asdf)/etc/bash_completion.d/asdf.bash

@@ -1,5 +1,6 @@
 # Use vim
 export EDITOR="vim"
+export VISUAL=$EDITOR
 
 if is_osx; then
   # Brew path
@@ -15,7 +16,9 @@ fi
 export PATH="$DOTBIN:$PATH"
 
 # Source custom env that will not be tracked
-source $HOME/.env_custom
+if [ -f "$HOME/.env_custom" ]; then
+  source $HOME/.env_custom
+fi
 
 # iTerm
 if [ -f "$HOME/.iterm2_shell_integration.zsh" ]; then
