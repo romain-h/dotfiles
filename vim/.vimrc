@@ -11,6 +11,7 @@ Plug 'bling/vim-airline'                        " Powerline with colors
 Plug 'sjl/vitality.vim'                         " AutoReload
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'                         " Search
+Plug 'neoclide/coc.nvim', {'branch': 'release'} " LSP client
 Plug 'tpope/vim-vinegar'                        " Vinegar
 Plug 'preservim/nerdcommenter'                  " the missing comment tool
 Plug 'w0rp/ale'                                 " Linter
@@ -321,11 +322,15 @@ let g:ale_fixers = {
 let g:ale_fix_on_save = 1
 let g:ale_completion_enabled = 0
 
+if filereadable(expand($HOME . "/.vim/cfg/coc.vim"))
+  source $HOME/.vim/cfg/coc.vim
+endif
+
 " Source the vimrc file after saving it. This way, you don't have to reload Vim to see the changes.
 if has("autocmd")
  augroup myvimrchooks
   au!
-  autocmd bufwritepost .vimrc source ~/.vimrc
+  autocmd bufwritepost .vimrc source $HOME/.vimrc
  augroup END
 endif
 
