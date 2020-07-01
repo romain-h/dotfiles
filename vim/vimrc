@@ -3,101 +3,60 @@ if &compatible          " only if not set before:
   set nocompatible      " use vim-defaults instead of vi-defaults (easier, more user friendly)
 endif
 
-" Helpers functions
-function! StrTrim(txt)
-  return substitute(a:txt, '^\n*\s*\(.\{-}\)\n*\s*$', '\1', '')
-endfunction
-
 " Plugins Manager
 call plug#begin('~/.vim/plugged')
 " Vundle manage
 Plug 'gmarik/vundle'
+Plug 'bling/vim-airline'                        " Powerline with colors
+Plug 'sjl/vitality.vim'                         " AutoReload
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'                         " Search
+Plug 'tpope/vim-vinegar'                        " Vinegar
+Plug 'preservim/nerdcommenter'                  " the missing comment tool
+Plug 'w0rp/ale'                                 " Linter
+Plug 'tpope/vim-surround'                       " Surrounder
+Plug 'vim-scripts/scratch.vim'                  " Block note into buffer
+Plug 'tpope/vim-fugitive'                       " Git for git blame..
+Plug 'tpope/vim-rhubarb'                        " Required by vim fugitive to integrate with Github
+Plug 'junegunn/vim-easy-align'                  " Align with ga
+Plug 'mattn/gist-vim'                           " Publish / edit Gist on Github from buffer
+Plug 'mattn/webapi-vim'                         " Required to use gist-vim
+Plug 'mattn/emmet-vim'                          " html tags
 
-" Main (mandatory) bundles
-" ------------------------
-Plug 'tpope/vim-sensible'       " Init vimrc by tpope
-Plug 'bling/vim-airline'        " Powerline with colors
-Plug 'sjl/vitality.vim'         " AutoReload
-Plug '/usr/local/opt/fzf'
-Plug 'junegunn/fzf.vim'
-Plug 'tpope/vim-vinegar'        " Vinegar
-Plug 'scrooloose/nerdcommenter' " the missing comment tool
-" Plug 'scrooloose/syntastic'     " Multi language checker
-Plug 'w0rp/ale'
-" Plug 'romain-h/sparkling'
-Plug 'tpope/vim-surround'       " Surrounder
-" Plug 'jiangmiao/auto-pairs'
-Plug 'vim-scripts/scratch.vim'  " Block note into buffer
-Plug 'Shougo/neocomplcache.vim' " Autocompletion
-Plug 'sdanielf/vim-stdtabs'     " Standard indentation matching language
-Plug 'tpope/vim-fugitive'       " Git for git blame..
-Plug 'tpope/vim-rhubarb'        " Required by vim fugitive to integrate with github
-" Plug 'bufkill.vim'              " Kill buffer :bd
-Plug 'SirVer/ultisnips'         " Snippet solution for Vim
-Plug 'Peeja/vim-cdo'            " Missing :cdo / :ldo
-Plug 'takac/vim-hardtime'
-Plug 'tpope/vim-abolish'
-
-" UI
-" --
+" Theme
+" -----
+Plug 'gruvbox-community/gruvbox'
 Plug 'w0ng/vim-hybrid'
-Plug 'iplog/vim-popsicles'
+Plug 'joshdick/onedark.vim'
 
-" Nice to have but not required for you Jedi
-" ------------------------------------------
-Plug 'majutsushi/tagbar'               " IDE like navigator into methods
-Plug 'nathanaelkane/vim-indent-guides' " Indentation guide <leader>ig
-Plug 'skwp/greplace.vim'               " Replace into multifiles
-Plug 'mattn/emmet-vim'                 " html tags
-Plug 'tpope/vim-markdown'
-Plug 'junegunn/vim-easy-align'
-
-" Specific to projects
-" --------------------
-Plug 'mattn/gist-vim'
-Plug 'mattn/webapi-vim'
-Plug 'groenewege/vim-less'
-Plug 'nono/vim-handlebars'
-Plug 'othree/html5.vim'
-Plug 'elzr/vim-json'
-Plug 'heavenshell/vim-jsdoc'
-Plug 'pangloss/vim-javascript'
-Plug 'leafgarland/typescript-vim'
-" Plug 'HerringtonDarkholme/yats.vim'
-Plug 'fatih/vim-go'
-Plug 'maxmellon/vim-jsx-pretty'
-Plug 'derekwyatt/vim-scala'
-" Neovim
-Plug 'benekastah/neomake'
-Plug 'jphustman/SQLUtilities'
-Plug 'vim-scripts/Align'
-
+" Languages
+Plug 'sheerun/vim-polyglot'
 call plug#end()            " required
 
 filetype plugin on
 filetype indent on
 syntax on
 
-" color settings (if terminal/gui supports it)
-if $TERM =~ '256color'
-  set t_Co=256
-  " Disable Background Color Erase (BCE) so that color schemes
-  " work properly when Vim is used inside tmux and GNU screen.
-  " See also http://snk.tuxfamily.org/log/vim-256color-bce.html
-  set t_ut=
-elseif $TERM =~ '^xterm$'
-  set t_Co=256
+" Color
+set termguicolors
+if exists('+termguicolors')
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
+let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_invert_selection = 0
+let g:gruvbox_improved_warnings = 1
+" let g:gruvbox_guisp_fallback = 'bg' " Show error with background until iTerm2 supports undercurl
+" https://gitlab.com/gnachman/iterm2/-/issues/6382
 
-if &t_Co > 2 || has("gui_running")
-  syntax on          " enable colors
-  set hlsearch       " highlight search (very useful!)
-  set incsearch      " search incremently (search while typing)
-endif
+colorscheme gruvbox
 
 " display settings
 set background=dark     " enable for dark terminals
+set cursorline          " Higlight the current line
 set scrolloff=2         " 2 lines above/below cursor when scrolling
+set sidescrolloff=5
+set display+=lastline
 set number              " show line numbers
 set showmatch           " show matching bracket (briefly jump)
 set showmode            " show mode in status bar (insert/replace/...)
@@ -121,13 +80,37 @@ set tabstop=2                  " number of spaces a tab counts for
 set shiftwidth=2               " spaces for autoindents
 set expandtab                  " turn a tabs into spaces
 set undolevels=10000           " number of forgivable mistakes
+set ttimeout
+set ttimeoutlen=100
 set timeoutlen=3000
 set fileformat=unix            " file mode is unix
 set diffopt=filler,iwhite      " ignore all whitespace and sync
 set relativenumber             " relative number (check auto switch into mapping)
+set nrformats-=octal
 
 set encoding=utf-8
 set fileencoding=utf-8
+
+if &listchars ==# 'eol:$'
+  set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
+endif
+
+if v:version > 703 || v:version == 703 && has("patch541")
+  set formatoptions+=j " Delete comment character when joining commented lines
+endif
+
+if has('path_extra')
+  setglobal tags-=./tags tags-=./tags; tags^=./tags;
+endif
+
+" Always show the signcolumn, otherwise it would shift the text each time
+" diagnostics appear/become resolved.
+if has("patch-8.1.1564")
+  " Recently vim can merge signcolumn and number column into one
+  set signcolumn=number
+else
+  set signcolumn=yes
+endif
 
 " Trim trailing whitespace when saving a document
 autocmd BufWritePre * :%s/\s\+$//e
@@ -157,6 +140,17 @@ set mouse=a             " use mouse in all modes
 set mousehide           " Hide mouse when typing
 set splitright          " the new window is created on the right
 
+if &tabpagemax < 50
+  set tabpagemax=50
+endif
+
+if !empty(&viminfo)
+  set viminfo^=!
+endif
+
+set sessionoptions-=options
+set viewoptions-=options
+
 " Backups
 set backupdir=~/.vim/tmp/backup// " backups
 set directory=~/.vim/tmp/swap//   " swap files
@@ -175,36 +169,46 @@ endif
 set vb
 set noeb vb t_vb=
 
-" Color Scheme
-set cursorline          " Higlight the current line
-silent! colorscheme hybrid
+" Ripgrep advanced
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --hidden --line-number --no-heading --color=always --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, spec, a:fullscreen)
+endfunction
 
-if executable('ag')
-  set grepprg=ag\ --search-files\ --smart-case\ --nogroup\ --nocolor
-  command -nargs=+ -complete=file -bar Ag silent! grep! <args>|botright cw|redraw!
-
-  set grepprg=ag
-  let g:grep_cmd_opts = '--line-numbers --noheading'
-endif
+command! -bang -nargs=* RG call RipgrepFzf(<q-args>, <bang>0)
+  " let g:fzf_layout = { 'tmux': '-p90%,60%' }
+  " let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
+  " let g:fzf_preview_window = 'right:50%'
 
 " ==== Mappings ====================
 " ==================================
+" Use <C-L> to clear the highlighting of :set hlsearch.
+if maparg('<C-L>', 'n') ==# ''
+  nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
+endif
+
 " Disable useless and annoying keys
 noremap Q <Nop>
 
-" grep word under cursor
 nnoremap <C-P> :Files<CR>
 nnoremap <Leader>p :Buffers<CR>
-nnoremap <Leader>F :Ag <C-R><C-W><CR>
-nnoremap <Leader>f :Ag<space>
+" grep word under cursor
+nnoremap <Leader>F :RG <C-R><C-W><CR>
+nnoremap <Leader>f :RG<CR>
 vnoremap <Leader>j :%!python -m json.tool<CR>
 
-vmap <Enter> <Plug>(EasyAlign)
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
 
 "Shortcut for editing  vimrc file in a new tab
 nmap <leader>ev :tabedit $MYVIMRC<cr>
-nmap <leader>en :set spell spelllang=en_gb<cr>
-nmap <leader>fr :set spell spelllang=fr_fr<cr>
+nmap <leader>le :set spell spelllang=en_gb<cr>
+nmap <leader>lf :set spell spelllang=fr_fr<cr>
 
 " line number
 nnoremap <silent><leader>n :set rnu! rnu? <cr>
@@ -223,13 +227,10 @@ endif
 "----------------------
 
 " Airline
-let g:airline_theme = 'dark'
+let g:airline_theme = 'gruvbox'
 let g:airline_left_sep = ''
 let g:airline_right_sep = ''
 " let g:airline#extensions#syntastic#enabled = 0
-
-" Neocomplete
-let g:neocomplcache_enable_at_startup = 1
 
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
@@ -238,13 +239,6 @@ autocmd FileType python setlocal omnifunc=pythoncomplete#Complete colorcolumn=10
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType gitcommit setlocal spell
 
-" function RunJSFix()
-  " execute "normal mF"
-  " execute "%!eslint_d --stdin --fix-to-stdout"
-  " execute "normal `F"
-" endfunction
-
-" autocmd BufWritePre *.js call RunJSFix()
 inoremap <expr><Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 
 let $FZF_DEFAULT_COMMAND = 'ag -g ""'
@@ -264,6 +258,23 @@ let g:jsx_ext_required = 0
 
 " Go
 let g:go_fmt_command = "goimports"
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_types = 1
+let g:go_highlight_function_parameters = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_generate_tags = 1
+let g:go_highlight_format_strings = 1
+let g:go_highlight_variable_declarations = 1
+let g:go_auto_sameids = 1
+
+" Rust
+let g:rustfmt_autosave = 1
 
 " handlebars templates
 autocmd BufNewFile,BufRead *.hb set ft=handlebars
@@ -271,18 +282,9 @@ autocmd BufNewFile,BufRead *.hb set ft=handlebars
 " Nerdcommenter
 let NERDSpaceDelims = 1
 
-" Hardtime
-let g:hardtime_default_on = 1
-let g:hardtime_showmsg = 1
-let g:hardtime_maxcount = 2
-let g:hardtime_ignore_quickfix = 1
-let g:list_of_normal_keys = ["h", "j", "k", "l", "+", "<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
-
 " Typescript
 let g:typescript_indent_disable = 1
 
-
-" Override vim-stdtabs
 autocmd FileType sh setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 autocmd FileType yml setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 autocmd FileType make setlocal noexpandtab
@@ -311,21 +313,6 @@ let g:ale_fixers = {
     \}
 let g:ale_fix_on_save = 1
 let g:ale_completion_enabled = 0
-" Syntastic
-" let b:syntastic_javascript_eslint_exec = StrTrim(system('npm-which eslint'))
-" let g:syntastic_javascript_checkers = ['eslint']
-" let g:syntastic_javascript_eslint_exec = 'eslint_d'
-" let g:syntastic_javascript_eslint_args = ['--fix']
-" function! SyntasticCheckHook(errors)
-  " checktime
-" endfunction
-" let g:syntastic_mode_map = { "mode": "active", "active_filetypes": [], "passive_filetypes": [] }
-
-function TOCamel() range
-	execute a:firstline . "," . a:lastline . 's#_*\(\u\)\(\u*\)#\1\L\2#g'
-endfunction
-
-nnoremap <leader>P mygggqG'y
 
 " Source the vimrc file after saving it. This way, you don't have to reload Vim to see the changes.
 if has("autocmd")
@@ -334,9 +321,6 @@ if has("autocmd")
   autocmd bufwritepost .vimrc source ~/.vimrc
  augroup END
 endif
-
-" Clipper yank for tmux
-nnoremap <leader>y :call system('nc localhost 8377', @0)<CR>
 
 set clipboard=unnamed
 " To see all leader mappings currently in use:
