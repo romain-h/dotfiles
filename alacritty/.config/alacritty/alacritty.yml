@@ -17,9 +17,9 @@ window:
   #
   # Specified in number of columns/lines, not pixels.
   # If both are `0`, this setting is ignored.
-  dimensions:
-   columns: 200
-   lines: 80
+  # dimensions:
+   # columns: 200
+   # lines: 80
 
   # Window position (changes require restart)
   #
@@ -35,12 +35,11 @@ window:
   # by DPI and the specified value is always added at both opposing sides.
   padding:
    x: 2
-   y: 2
+   y: 0
 
   # Spread additional padding evenly around the terminal content.
   #dynamic_padding: false
-
-  # Window decorations
+# Window decorations
   #
   # Values for `decorations`:
   #     - full: Borders and title bar
@@ -354,19 +353,12 @@ dynamic_title: true
 #   - (macOS) /bin/bash --login
 #   - (Linux/BSD) user login shell
 #   - (Windows) powershell
-# shell:
-  # program: /bin/bash
-  # args:
-    # - --login
-    # - -c
-    # - tmux new-session -A -s main-alacritty
-# shell:
- # # program: /usr/local/bin/zsh
- # program: /bin/zsh
- # args:
-   # - --login
-   # - -c
-   # - tmux new-session -A -s main-alacritty
+shell:
+  program: /bin/bash
+  args:
+    - --login
+    - -c
+    - tmux new-session -A -s main
 
 # Startup directory
 #
@@ -665,7 +657,7 @@ key_bindings:
   #- { key: Q,      mods: Command,            action: Quit             }
   #- { key: W,      mods: Command,            action: Quit             }
   - { key: N,      mods: Command,            action: SpawnNewInstance }
-  # - { key: F,      mods: Command|Control,    action: ToggleFullscreen }
+  - { key: F,      mods: Command,    action: ToggleSimpleFullscreen }
 
 #debug:
   # Display the time it takes to redraw each frame.

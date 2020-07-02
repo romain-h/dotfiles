@@ -1,5 +1,12 @@
 # Dotfiles
 
+![](https://i.imgur.com/PC5A6IL.png)
+
+## Installing
+
+I used [GNU Stow](https://www.gnu.org/software/stow/) to manage all symlinks.
+Running `./install.sh init` should install everything on macOS.
+
 ## Custom scripts
 
 + `bin/clipper.sh` - `bash` - Use `reattach-to-user-namespace with `pbcopy` on
