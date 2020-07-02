@@ -1,3 +1,6 @@
+# RIPGREP
+export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
+
 # FZF
 export FZF_DEFAULT_COMMAND="rg --files --follow --hidden --glob '!.git/*'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"

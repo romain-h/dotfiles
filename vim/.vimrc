@@ -189,9 +189,15 @@ function! RipgrepFzf(query, fullscreen)
 endfunction
 
 command! -bang -nargs=* RG call RipgrepFzf(<q-args>, <bang>0)
-  " let g:fzf_layout = { 'tmux': '-p90%,60%' }
-  " let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
-  " let g:fzf_preview_window = 'right:50%'
+
+if executable('rg')
+  set grepprg=rg\ -H\ --no-heading\ --vimgrep
+  command -nargs=+ -complete=file -bar Boo silent! grep! <args>|cwindow|redraw!
+
+  nnoremap <Leader>f :Rg<Space>
+  " grep word under cursor
+  nnoremap <Leader>F :Rg <C-R><C-W><CR>
+endif
 
 " ==== Mappings ====================
 " ==================================
@@ -202,12 +208,8 @@ endif
 
 " Disable useless and annoying keys
 noremap Q <Nop>
-
 nnoremap <C-P> :Files<CR>
 nnoremap <Leader>p :Buffers<CR>
-" grep word under cursor
-nnoremap <Leader>F :RG <C-R><C-W><CR>
-nnoremap <Leader>f :RG<CR>
 vnoremap <Leader>j :%!python -m json.tool<CR>
 
 " Start interactive EasyAlign in visual mode (e.g. vipga)
