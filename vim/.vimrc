@@ -32,6 +32,7 @@ Plug 'joshdick/onedark.vim'
 
 " Languages
 Plug 'sheerun/vim-polyglot'
+Plug 'fatih/vim-go'
 call plug#end()            " required
 
 filetype plugin on
