@@ -202,13 +202,9 @@ endif
 
 " ==== Mappings ====================
 " ==================================
-" Use <C-L> to clear the highlighting of :set hlsearch.
-if maparg('<C-L>', 'n') ==# ''
-  nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
-endif
-
 " Disable useless and annoying keys
 noremap Q <Nop>
+
 nnoremap <C-P> :Files<CR>
 nnoremap <Leader>p :Buffers<CR>
 vnoremap <Leader>j :%!python -m json.tool<CR>
@@ -282,7 +278,6 @@ let g:go_highlight_function_calls = 1
 let g:go_highlight_generate_tags = 1
 let g:go_highlight_format_strings = 1
 let g:go_highlight_variable_declarations = 1
-let g:go_auto_sameids = 1
 
 " Rust
 let g:rustfmt_autosave = 1
