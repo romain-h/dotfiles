@@ -1,4 +1,3 @@
-ZSH_DISABLE_COMPFIX=true
 export EDITOR="vim"
 export VISUAL=$EDITOR
 
@@ -34,4 +33,3 @@ fi
 if [ -f "$HOME/.env_custom" ]; then
   source $HOME/.env_custom
 fi
-

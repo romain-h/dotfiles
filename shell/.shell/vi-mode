@@ -23,6 +23,9 @@ bindkey -M vicmd  '^H' backward-char
 # Keep retro compat with incremental search
 bindkey "^R" history-incremental-search-backward
 
+# Use previous key binding for visual mode in VIM
+bindkey -M vicmd 'v' edit-command-line
+
 # Kill the lag with [esc]...
 export KEYTIMEOUT=1
 
