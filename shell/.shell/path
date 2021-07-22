@@ -1,6 +1,12 @@
+# Brew
+PATH="/usr/local/sbin:$PATH"
+
 # GNU Brew
-PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
-PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"
+PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
+PATH="$(brew --prefix gnu-sed)/libexec/gnubin:$PATH"
 
 # Go
 export PATH="$GOPATH/bin:$PATH"
+
+# PSQL - Brew libpq
+export PATH="$(brew --prefix libpq)/bin:$PATH"
