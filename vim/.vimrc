@@ -5,10 +5,7 @@ endif
 
 " Plugins Manager
 call plug#begin('~/.vim/plugged')
-" Vundle manage
-Plug 'gmarik/vundle'
 Plug 'bling/vim-airline'                        " Powerline with colors
-Plug 'sjl/vitality.vim'                         " AutoReload
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'                         " Search
 Plug 'neoclide/coc.nvim', {'branch': 'release'} " LSP client
@@ -20,6 +17,7 @@ Plug 'vim-scripts/scratch.vim'                  " Block note into buffer
 Plug 'tpope/vim-fugitive'                       " Git for git blame..
 Plug 'tpope/vim-rhubarb'                        " Required by vim fugitive to integrate with Github
 Plug 'junegunn/vim-easy-align'                  " Align with ga
+Plug 'dhruvasagar/vim-table-mode'
 Plug 'mattn/gist-vim'                           " Publish / edit Gist on Github from buffer
 Plug 'mattn/webapi-vim'                         " Required to use gist-vim
 Plug 'mattn/emmet-vim'                          " html tags
@@ -27,12 +25,12 @@ Plug 'mattn/emmet-vim'                          " html tags
 " Theme
 " -----
 Plug 'gruvbox-community/gruvbox'
-Plug 'w0ng/vim-hybrid'
-Plug 'joshdick/onedark.vim'
+" Plug 'w0ng/vim-hybrid'
+" Plug 'joshdick/onedark.vim'
 
 " Languages
 Plug 'sheerun/vim-polyglot'
-Plug 'fatih/vim-go'
+Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 call plug#end()            " required
 
 filetype plugin on
@@ -181,24 +179,50 @@ set vb
 set noeb vb t_vb=
 
 " Ripgrep advanced
-function! RipgrepFzf(query, fullscreen)
-  let command_fmt = 'rg --column --hidden --line-number --no-heading --color=always --smart-case -- %s || true'
-  let initial_command = printf(command_fmt, shellescape(a:query))
-  let reload_command = printf(command_fmt, '{q}')
-  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
-  call fzf#vim#grep(initial_command, 1, spec, a:fullscreen)
+" function! RipgrepFzf(query, fullscreen)
+  " let command_fmt = 'rg --column --no-hidden --no-ignore --line-number --no-heading --color=always --smart-case -- %s || true'
+  " let initial_command = printf(command_fmt, shellescape(a:query))
+  " let reload_command = printf(command_fmt, '{q}')
+  " let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  " call fzf#vim#grep(initial_command, 1, spec, a:fullscreen)
+" endfunction
+
+function! Shortpath()
+  let short = fnamemodify(getcwd(), ':~:.')
+  if !has('win32unix')
+    let short = pathshorten(short)
+  endif
+  let slash = (s:is_win && !&shellslash) ? '\' : '/'
+  return empty(short) ? '~'.slash : short . (short =~ escape(slash, '\').'$' ? '' : slash)
 endfunction
 
-command! -bang -nargs=* RG call RipgrepFzf(<q-args>, <bang>0)
+function! FZFAllFiles()
+    let dir = Shortpath()
+  let prev_default_command = $FZF_DEFAULT_COMMAND
+    let $FZF_DEFAULT_COMMAND = 'rg --files --follow --hidden --ignore'
+    call fzf#vim#files(dir)
+  " finally
+    let $FZF_DEFAULT_COMMAND = prev_default_command
+  " endtry
+endfunction
+
+let g:fzf_layout = { 'down': '40%' }
+let g:fzf_history_dir = '~/.local/share/fzf-history'
+" command! -bang -nargs=* RG call RipgrepFzf(<q-args>, <bang>0)
+command! -bang -nargs=* AllFiles call FZFAllFiles()
+" command! -bang -nargs=? -complete=dir Files
 
 if executable('rg')
   set grepprg=rg\ -H\ --no-heading\ --vimgrep
-  command -nargs=+ -complete=file -bar Boo silent! grep! <args>|cwindow|redraw!
+  command -nargs=+ -complete=file -bar Crg silent! grep! <args>|botright cw|redraw!
 
-  nnoremap <Leader>f :Rg<Space>
+  nnoremap <Leader>f :Crg<Space>
   " grep word under cursor
-  nnoremap <Leader>F :Rg <C-R><C-W><CR>
+  nnoremap <Leader>F :Crg <C-R><C-W><CR>
 endif
+
+" Default spell
+set spell spelllang=en_gb
 
 " ==== Mappings ====================
 " ==================================
@@ -206,6 +230,7 @@ endif
 noremap Q <Nop>
 
 nnoremap <C-P> :Files<CR>
+nnoremap <C-L> :AllFiles<CR>
 nnoremap <Leader>p :Buffers<CR>
 vnoremap <Leader>j :%!python -m json.tool<CR>
 
@@ -278,6 +303,7 @@ let g:go_highlight_function_calls = 1
 let g:go_highlight_generate_tags = 1
 let g:go_highlight_format_strings = 1
 let g:go_highlight_variable_declarations = 1
+let g:go_code_completion_enabled = 1
 
 " Rust
 let g:rustfmt_autosave = 1
@@ -296,29 +322,44 @@ autocmd FileType yml setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 autocmd FileType make setlocal noexpandtab
 
 " Linter / Fixer [ALE config]
+let g:ale_sign_error = "✗"
+let g:ale_sign_warning = "⚠"
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = "[%linter%] %severity% - %s"
 let g:ale_linters = {
     \   'javascript': ['eslint', 'flow'],
     \   'javascript.jsx': ['eslint', 'flow'],
+    \   'javascriptreact': ['eslint', 'flow'],
     \   'typescript': ['eslint', 'tsserver'],
     \   'typescriptreact': ['eslint', 'tsserver'],
     \   'css': ['prettier'],
     \   'sh': ['shellcheck'],
     \   'python': ['flake8'],
+    \   'markdown': ['alex', 'remark-lint'],
     \}
 let g:ale_fixers = {
     \   'javascript': ['prettier'],
     \   'javascript.jsx': ['prettier'],
+    \   'javascriptreact': ['prettier'],
     \   'typescript': ['prettier'],
     \   'typescriptreact': ['prettier'],
     \   'css': ['prettier'],
     \   'sh': ['shfmt'],
-    \   'python': ['black'],
+    \   'python': ['black', 'isort'],
     \}
 let g:ale_fix_on_save = 1
 let g:ale_completion_enabled = 0
+
+" Terraform
+let g:terraform_fmt_on_save=1
+autocmd BufRead,BufNewFile *.hcl set filetype=terraform
+
+" Markdown
+autocmd FileType markdown setlocal spell
+autocmd FileType markdown setlocal linebreak " wrap on words, not characters
+
+let g:table_mode_corner='|'
 
 if filereadable(expand($HOME . "/.vim/cfg/coc.vim"))
   source $HOME/.vim/cfg/coc.vim
