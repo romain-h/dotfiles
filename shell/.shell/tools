@@ -5,20 +5,14 @@ export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
 export FZF_DEFAULT_COMMAND="rg --files --follow --hidden --glob '!.git/*'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-# ASDF
-export ASDFINSTALLS=$HOME/.asdf/installs
-source $(brew --prefix asdf)/asdf.sh
-
-# Go
-export GOPATH=$HOME/golang
-GOV=$(asdf current golang | sed -E 's/\ *\(set by.*//g')
-export GOROOT=$ASDFINSTALLS/golang/$GOV/go/
+# ASDF - Configured with direnv plugin
+PATH="$(brew --prefix asdf)/bin:$PATH"
+source $(brew --prefix asdf)/lib/asdf.sh # Load wrapper only (direnv)
+eval "$(asdf exec direnv hook zsh)"
+# A shortcut for asdf managed direnv.
+direnv() { asdf exec direnv "$@"; }
 
 # Hub
 eval "$(hub alias -s)"
 
 alias vimp="fzf --preview 'cat {}'"
-
-# Terraform
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/local/bin/terraform terraform
