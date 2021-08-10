@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Capture today's notes
+TODAY=$(date +"%Y-%m-%d")
+
+echo "
+$TODAY
+----------
+ + " >>~/Dropbox/today.txt
+
+vim "+ normal G $" ~/Dropbox/today.txt
