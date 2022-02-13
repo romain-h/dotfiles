@@ -18,7 +18,7 @@
 	excludesfile = ~/.gitignore
 
 [merge]
-  tool = vimdiff
+  tool = nvimdiff
 
 [mergetool]
   prompt = false
@@ -29,5 +29,7 @@
 	insteadOf = https://github.com/
 [url "git@gitlab.com:"]
 	insteadOf = https://gitlab.com/
+[url "ssh://git@github.com/monzo/"]
+	insteadOf = https://github.com/monzo/
 [pull]
 	ff = only
