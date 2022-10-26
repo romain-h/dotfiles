@@ -6,6 +6,6 @@ TODAY=$(date +"%Y-%m-%d")
 echo "
 $TODAY
 ----------
- + " >>~/Dropbox/today.txt
+ + " >> $NOTE_DIR/today.txt
 
-vim "+ normal G $" ~/Dropbox/today.txt
+vim "+ normal G $" $NOTE_DIR/today.txt

@@ -7,6 +7,9 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'gruvbox-community/gruvbox'
   Plug 'tpope/vim-fugitive'                       " Git for git blame..
   Plug 'tpope/vim-rhubarb'                        " Required by vim fugitive to integrate with Github
+  Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }}
+  Plug 'nvim-lua/plenary.nvim'
+  Plug 'jose-elias-alvarez/null-ls.nvim' " 
 
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
   Plug 'nvim-treesitter/nvim-treesitter-textobjects'
@@ -18,6 +21,8 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'hrsh7th/cmp-vsnip'
   Plug 'hrsh7th/vim-vsnip'
 
+  " Plug 'prettier/vim-prettier'
+
   " Plug 'puremourning/vimspector'
   Plug 'mfussenegger/nvim-dap'
   Plug 'leoluz/nvim-dap-go'
@@ -28,15 +33,12 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'mattn/webapi-vim'                         " Required to use gist-vim
 call plug#end()            " required
 
+
 set termguicolors
-if exists('+termguicolors')
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-endif
+colorscheme gruvbox
 let g:gruvbox_contrast_dark = 'hard'
 let g:gruvbox_invert_selection = 0
 let g:gruvbox_improved_warnings = 1
-colorscheme gruvbox
 
 set cursorline          " Higlight the current line
 set background=dark     " enable for dark terminals
@@ -96,13 +98,16 @@ set clipboard=unnamed
 
 lua << EOF
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = "maintained", -- { "bash", "go", "javascript" }, one of "all", "maintained" (parsers with maintainers), or a list of languages
+  ensure_installed = "all", -- { "bash", "go", "javascript" }, one of "all", or a list of languages
   highlight = {
     enable = true,              -- false will disable the whole extension
   },
 }
 
 local nvim_lsp = require('lspconfig')
+local util = require('lspconfig/util')
+local null_ls = require('null-ls')
+
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
@@ -195,19 +200,29 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 nvim_lsp.gopls.setup{
-  cmd = {"gopls", "--remote=auto"},
-  capabilities = capabilities,
-  settings = {
-    gopls = {
-      analyses = {
-        unusedparams = true,
+    cmd = {"gopls", "-remote=auto"},
+    capabilities = capabilities,
+    filetypes = {"go", "gomod"},
+
+    -- Ignore typical project roots which cause gopls to ingest large monorepos.
+    --root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+    root_dir = util.root_pattern("main.go", "README.md", "LICENSE"),
+
+    settings = {
+      gopls = {
+        -- Don't try to find the go.mod file, otherwise we ingest large monorepos
+        expandWorkspaceToModule = false,
+        memoryMode = "DegradeClosed",
+        directoryFilters = {
+          "-vendor",
+          "-manifests",
+        },
       },
-      staticcheck = true,
     },
-  },
-  root_dir = nvim_lsp.util.root_pattern("go.mod", "main.go", ".git", "README.md", "LICENSE"),
-  ignoredRootPaths = { "$HOME/src/github.com/monzo/wearedev/" },
-  memoryMode = "DegradeClosed",
+    on_attach = on_attach
+}
+
+nvim_lsp.flow.setup{
   on_attach = on_attach
 }
 
@@ -252,6 +267,14 @@ cmp.setup {
 -- Golang debugger
 -- https://github.com/leoluz/nvim-dap-go
 --require('dap-go').setup()
+
+-- Spellcheck / Vale syntax
+-- null_ls.setup({
+--   sources = {
+--     null_ls.builtins.diagnostics.vale,
+--   },
+--   on_attach = on_attach
+-- })
 EOF
 
 " nmap <silent> <leader>td :lua require('dap-go').debug_test()<CR>
@@ -283,6 +306,16 @@ if executable('rg')
 endif
 
 nnoremap <Leader>p :Buffers<CR>
+vnoremap <Leader>j :%!python -m json.tool<CR>
+
+" Replace base64 content
+vnoremap <leader>64 c<c-r>=system('base64 --decode', @")<cr><esc>
+" S101 exec
+nmap <leader>8 :exec "r !£ -e s101 \'".getline('.')."\'"
+function! S101()
+  execute "r !£ -e s101 \'".getline('.')."\'"
+endfunction
+
 
 let g:airline_theme = 'gruvbox'
 let g:airline_left_sep = ''
@@ -294,6 +327,10 @@ let g:gist_detect_filetype = 1
 
 " Nerdcommenter
 let NERDSpaceDelims = 1
+
+" Prettier
+" let g:prettier#autoformat = 1
+" let g:prettier#autoformat_require_pragma = 0
 
 autocmd FileType markdown setlocal spell
 autocmd FileType markdown setlocal linebreak " wrap on words, not characters
