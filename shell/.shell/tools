@@ -1,3 +1,5 @@
+# ls colored 
+alias ls="ls --color"
 # RIPGREP
 export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
 
@@ -17,3 +19,15 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # eval "$(hub alias -s)"
 
 alias vimp="fzf --preview 'cat {}'"
+
+# Delete local branches already squashed merged on master
+# From https://stackoverflow.com/a/60501712/16975640
+function git_delete_squashed_branch() {
+  mainBranch=${$1:"master"}
+  git for-each-ref refs/heads/ "--format=%(refname:short)" | 
+    while read branch; do 
+      mergeBase=$(git merge-base $mainBranch $branch) 
+      [[ $(git cherry $mainBranch $(git commit-tree $(git rev-parse $branch\^{tree}) -p $mergeBase -m _)) == "-"* ]] && git branch -D $branch; 
+    done
+  }
+

@@ -10,3 +10,6 @@ export PATH="$GOPATH/bin:$PATH"
 
 # PSQL - Brew libpq
 export PATH="$(brew --prefix libpq)/bin:$PATH"
+
+# Custom bin
+export PATH="$HOME/.dotfiles/bin:$PATH"

@@ -1,4 +1,4 @@
-export EDITOR="vim"
+export EDITOR="nvim"
 export VISUAL=$EDITOR
 
 ZSH="$HOME/.oh-my-zsh"
@@ -21,12 +21,12 @@ if [ -f "$HOME/.shell/vi-mode" ]; then
   source $HOME/.shell/vi-mode
 fi
 
-if [ -f "$HOME/.shell/tools" ]; then
-  source $HOME/.shell/tools
-fi
-
 if [ -f "$HOME/.shell/path" ]; then
   source $HOME/.shell/path
+fi
+
+if [ -f "$HOME/.shell/tools" ]; then
+  source $HOME/.shell/tools
 fi
 
 # Source custom env that will not be tracked
