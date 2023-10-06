@@ -11,9 +11,10 @@
   co = checkout
   fp = format-patch
   lg = log --graph --pretty=tformat:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%an %cr)%Creset' --abbrev-commit --date=relative
+  recent = for-each-ref --sort=-committerdate refs/heads/ --count=10 --format='%(color:red)%(objectname:short)%(color:reset) %(HEAD) %(color:yellow)%(refname:short)%(color:reset) (%(color:green)%(committerdate:relative)%(color:reset)) %(contents:subject)'
 
 [core]
-  editor = vim
+  editor = nvim
   autocrlf = input
 	excludesfile = ~/.gitignore
 
@@ -33,3 +34,6 @@
 	insteadOf = https://github.com/monzo/
 [pull]
 	ff = only
+
+[includeIf "gitdir:~/src/github.com/monzo/"]
+	path = ~/.gitconfig-monzo
