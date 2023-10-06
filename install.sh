@@ -2,7 +2,7 @@
 
 TARGET="$HOME"
 BIN="/usr/local/bin"
-HOME_SYMLINKS="alacritty direnv git nvim ripgrep shell tmux vim"
+HOME_SYMLINKS="alacritty bat direnv git nvim ripgrep shell tmux vim"
 BIN_SYMLINKS="bin"
 
 BREW_LIST="asdf bat bc clipper curl exif exiftool ffmpeg fzf git gnu-sed \
