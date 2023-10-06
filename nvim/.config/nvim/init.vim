@@ -9,7 +9,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'tpope/vim-rhubarb'                        " Required by vim fugitive to integrate with Github
   Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }}
   Plug 'nvim-lua/plenary.nvim'
-  Plug 'jose-elias-alvarez/null-ls.nvim' " 
+  Plug 'jose-elias-alvarez/null-ls.nvim'
 
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
   Plug 'nvim-treesitter/nvim-treesitter-textobjects'
@@ -21,7 +21,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'hrsh7th/cmp-vsnip'
   Plug 'hrsh7th/vim-vsnip'
 
-  " Plug 'prettier/vim-prettier'
+  Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
 
   " Plug 'puremourning/vimspector'
   Plug 'mfussenegger/nvim-dap'
@@ -31,6 +31,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'vim-scripts/scratch.vim'                  " Block note into buffer
   Plug 'mattn/gist-vim'                           " Publish / edit Gist on Github from buffer
   Plug 'mattn/webapi-vim'                         " Required to use gist-vim
+  Plug 'github/copilot.vim'
 call plug#end()            " required
 
 
@@ -76,6 +77,8 @@ set fileformat=unix            " file mode is unix
 set diffopt=filler,iwhite      " ignore all whitespace and sync
 set relativenumber             " relative number (check auto switch into mapping)
 set nrformats-=octal
+set backup                        " enable backup
+set backupcopy=yes                " auto mode bug with a watcher task
 
 set encoding=utf-8
 set fileencoding=utf-8
@@ -134,13 +137,17 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
   buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  buf_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
   buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
   buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
   buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 
 end
+-- TODO find a way to run test from test block
+-- lua vim.lsp.codelens.refresh()
+-- lua vim.lsp.codelens.run()
+-- How can we render the result in another page?
 
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     vim.lsp.diagnostic.on_publish_diagnostics, {
@@ -149,7 +156,7 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     }
 )
 
-function goimp(waitms) 
+function goimp(waitms)
   wait_ms = wait_ms
   local params = vim.lsp.util.make_range_params()
   params.context = { only = { 'source.organizeImports' } }
@@ -165,41 +172,21 @@ function goimp(waitms)
   end
 end
 
-function goimports(timeoutms)
-  local context = { source = { organizeImports = true } }
-  vim.validate { context = { context, "t", true } }
-
-  local params = vim.lsp.util.make_range_params()
-  params.context = context
-
-  -- See the implementation of the textDocument/codeAction callback
-  -- (lua/vim/lsp/handler.lua) for how to do this properly.
-  local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, timeout_ms)
-  if not result or next(result) == nil then return end
-  local actions = result[1].result
-  if not actions then return end
-  local action = actions[1]
-
-  -- textDocument/codeAction can return either Command[] or CodeAction[]. If it
-  -- is a CodeAction, it can have either an edit, a command or both. Edits
-  -- should be executed first.
-  if action.edit or type(action.command) == "table" then
-    if action.edit then
-      vim.lsp.util.apply_workspace_edit(action.edit)
-    end
-    if type(action.command) == "table" then
-      vim.lsp.buf.execute_command(action.command)
-    end
-  else
-    vim.lsp.buf.execute_command(action)
-  end
-end
-
 -- nvim-cmp supports additional completion capabilities
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 nvim_lsp.gopls.setup{
+    on_init = function(client)
+      local path = client.workspace_folders[1].name
+
+      if string.find(path, "monzo/wearedev") then
+         client.config.settings.gopls['local'] = 'github.com/monzo/wearedev'
+      end
+
+      client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
+      return true
+    end,
     cmd = {"gopls", "-remote=auto"},
     capabilities = capabilities,
     filetypes = {"go", "gomod"},
@@ -217,12 +204,26 @@ nvim_lsp.gopls.setup{
           "-vendor",
           "-manifests",
         },
+        codelenses = {
+          generate = true,
+          gc_details = true,
+          test = true,
+          tidy = true,
+        },
       },
     },
     on_attach = on_attach
 }
 
 nvim_lsp.flow.setup{
+  on_attach = on_attach
+}
+
+nvim_lsp.tsserver.setup{
+  on_attach = on_attach
+}
+
+nvim_lsp.pyright.setup{
   on_attach = on_attach
 }
 
@@ -266,20 +267,24 @@ cmp.setup {
 
 -- Golang debugger
 -- https://github.com/leoluz/nvim-dap-go
---require('dap-go').setup()
+  require('dap-go').setup()
 
 -- Spellcheck / Vale syntax
--- null_ls.setup({
---   sources = {
---     null_ls.builtins.diagnostics.vale,
---   },
---   on_attach = on_attach
--- })
+null_ls.setup({
+ sources = {
+   null_ls.builtins.diagnostics.vale,
+ },
+ on_attach = on_attach
+})
 EOF
 
 " nmap <silent> <leader>td :lua require('dap-go').debug_test()<CR>
-autocmd BufWritePre *.go lua vim.lsp.buf.formatting_sync()
+autocmd BufWritePre *.go lua vim.lsp.buf.format({ async = false })
 autocmd BufWritePre *.go lua goimp(1000)
+
+" Trim trailing whitespace when saving a document
+autocmd BufWritePre * :%s/\s\+$//e
+autocmd FileType go set colorcolumn=120
 
 nnoremap <C-P> :Files<CR>
 
@@ -306,7 +311,12 @@ if executable('rg')
 endif
 
 nnoremap <Leader>p :Buffers<CR>
+nnoremap <Leader>m :Marks<CR>
+nnoremap <Leader>h :!handlertool '. getpos('.')<CR>
 vnoremap <Leader>j :%!python -m json.tool<CR>
+
+imap <silent><script><expr> <C-J> copilot#Accept("\<CR>")
+let g:copilot_no_tab_map = v:true
 
 " Replace base64 content
 vnoremap <leader>64 c<c-r>=system('base64 --decode', @")<cr><esc>
@@ -316,6 +326,7 @@ function! S101()
   execute "r !£ -e s101 \'".getline('.')."\'"
 endfunction
 
+nnoremap gh :let pp=getpos('.')<CR>:let res=split(system('handlertool '.shellescape(expand('%:p').':'.line('.').':'.col('.'))), ':')<CR>:e <C-R>=res[0]<CR><CR>:call setpos('.',[pp[0],res[1],res[2],0])<CR>
 
 let g:airline_theme = 'gruvbox'
 let g:airline_left_sep = ''
