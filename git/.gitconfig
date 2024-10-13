@@ -9,15 +9,23 @@
   st = status
   ci = commit
   co = checkout
-  fp = format-patch
+  fp = push --force-with-lease
   lg = log --graph --pretty=tformat:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%an %cr)%Creset' --abbrev-commit --date=relative
   recent = for-each-ref --sort=-committerdate refs/heads/ --count=10 --format='%(color:red)%(objectname:short)%(color:reset) %(HEAD) %(color:yellow)%(refname:short)%(color:reset) (%(color:green)%(committerdate:relative)%(color:reset)) %(contents:subject)'
+; fpstack = "!git log --decorate=short --pretty='format:%D' origin/master.. | sed 's/, /\\n/g; s/HEAD -> //'  | grep -Ev '/|^$' | xargs git push --force-with-lease origin"
 
 [core]
   editor = nvim
   autocrlf = input
 	excludesfile = ~/.gitignore
 
+[pull]
+	ff = only
+[push]
+	autoSetupRemote = true
+[rebase]
+	autoStash = true
+	updateRefs = true
 [merge]
   tool = nvimdiff
 
@@ -32,8 +40,11 @@
 	insteadOf = https://gitlab.com/
 [url "ssh://git@github.com/monzo/"]
 	insteadOf = https://github.com/monzo/
-[pull]
-	ff = only
 
 [includeIf "gitdir:~/src/github.com/monzo/"]
 	path = ~/.gitconfig-monzo
+
+[fetch]
+	writeCommitGraph = true
+[branch]
+	sort = -committerdate
