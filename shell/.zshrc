@@ -9,8 +9,6 @@ fi
 
 # Plugins
 plugins=( \
-  aws \
-  tmux \
   vi-mode \
 )
 
