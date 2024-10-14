@@ -42,7 +42,7 @@ return {
         end,
         desc = 'Debug: Set Breakpoint',
       },
-      { '<leader>dg', require('dap-go').debug_test(), desc = 'Debug Nearest Go Test' },
+      { '<leader>dg', require('dap-go').debug_test, desc = 'Debug Nearest Go Test' },
       -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
       { '<F7>', dapui.toggle, desc = 'Debug: See last session result.' },
       unpack(keys),
