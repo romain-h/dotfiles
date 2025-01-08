@@ -1,4 +1,4 @@
-# ls colored 
+# ls colored
 alias ls="ls --color"
 # RIPGREP
 export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
@@ -6,14 +6,6 @@ export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
 # FZF
 export FZF_DEFAULT_COMMAND="rg --files --follow --hidden --glob '!.git/*'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-
-# ASDF - Configured with direnv plugin
-# export ASDF_DIR="/usr/local/opt/asdf/libexec"
-# PATH="$(brew --prefix asdf)/bin:$PATH"
-# source $(brew --prefix asdf)/lib/asdf.sh # Load wrapper only (direnv)
-# eval "$(asdf exec direnv hook zsh)"
-# A shortcut for asdf managed direnv.
-# direnv() { asdf exec direnv "$@"; }
 
 # Hub
 # eval "$(hub alias -s)"
@@ -24,10 +16,10 @@ alias vimp="fzf --preview 'cat {}'"
 # From https://stackoverflow.com/a/60501712/16975640
 function git_delete_squashed_branch() {
   mainBranch=${$1:"master"}
-  git for-each-ref refs/heads/ "--format=%(refname:short)" | 
-    while read branch; do 
-      mergeBase=$(git merge-base $mainBranch $branch) 
-      [[ $(git cherry $mainBranch $(git commit-tree $(git rev-parse $branch\^{tree}) -p $mergeBase -m _)) == "-"* ]] && git branch -D $branch; 
+  git for-each-ref refs/heads/ "--format=%(refname:short)" |
+    while read branch; do
+      mergeBase=$(git merge-base $mainBranch $branch)
+      [[ $(git cherry $mainBranch $(git commit-tree $(git rev-parse $branch\^{tree}) -p $mergeBase -m _)) == "-"* ]] && git branch -D $branch;
     done
   }
 

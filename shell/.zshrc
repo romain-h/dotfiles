@@ -1,7 +1,7 @@
 export EDITOR="nvim"
 export VISUAL=$EDITOR
 
-ZSH="$HOME/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 if [ -f "$HOME/.shell/prompt" ]; then
   source $HOME/.shell/prompt

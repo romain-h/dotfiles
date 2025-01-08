@@ -66,9 +66,9 @@ mods = "Command"
 [selection]
 semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 
-[shell]
-args = ["--login", "-c", "tmux new-session -A -s main"]
+[terminal.shell]
 program = "/bin/zsh"
+args = ["--login", "-c", "tmux new-session -A -s main"]
 
 [window]
 decorations = "full"

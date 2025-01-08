@@ -2,15 +2,15 @@
 
 TARGET="$HOME"
 BIN="/usr/local/bin"
-HOME_SYMLINKS="alacritty bat direnv git nvim ripgrep shell tmux vim"
+HOME_SYMLINKS="alacritty bat git nvim ripgrep shell tmux"
 BIN_SYMLINKS="bin"
 
-BREW_LIST="asdf bat bc clipper curl exif exiftool ffmpeg fzf git gnu-sed \
-    graphviz htop imagemagick irssi jq mkcert neofetch pandoc \
-    reattach-to-user-namespace rename ripgrep shellcheck shfmt stow \
-    tmux vim wget zsh"
+BREW_LIST="bat bc curl exif exiftool ffmpeg fzf git gnu-sed \
+    go graphviz htop hub imagemagick irssi jq mkcert node pandoc \
+    rename ripgrep shellcheck shfmt stow \
+    tmux neovim vim wget zsh"
 
-BREW_LIST_CASK="alacritty rectangle"
+BREW_LIST_CASK="alacritty calibre font-commit-mono-nerd-font rectangle spotify slack"
 
 prompt_confirm() {
   while true; do
@@ -56,7 +56,7 @@ install_symlinks() {
 install_brew() {
   if [ ! "$(command -v brew)" ]; then
     echo "Installing Homebrew..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
 }
 
@@ -73,35 +73,26 @@ install_zsh() {
 
   # install oh-my-zsh
   if [ ! -r "$TARGET/.oh-my-zsh" ]; then
-    git clone git://github.com/ohmyzsh/ohmyzsh.git "$TARGET/.oh-my-zsh"
-    chsh -s "$(command -v zsh)"
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   fi
 }
 
 install_vim() {
-  brew install vim
-
-  # install Plug
-  if [ ! -f "$TARGET/.vim/autoload/plug.vim" ]; then
-    curl -fLo "$TARGET/.vim/autoload/plug.vim" --create-dirs \
-      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  fi
-
-  # install all plugins
-  vim +'silent! PlugInstall' +qall
+  brew install neovim
+  nvim --headless "+Lazy! sync" +qa
 }
 
 install_dev_tools() {
   brew install $BREW_LIST
-  brew cask install $BREW_LIST_CASK
+  brew install --cask $BREW_LIST_CASK
 }
 
 refresh_system() {
-  vim +PlugUpdate +qall
-
   brew update
   brew upgrade $BREW_LIST
-  brew cask upgrade
+  brew upgrade --cask
+
+  nvim --headless "+Lazy! sync" +qa
 }
 
 install_initials() {
