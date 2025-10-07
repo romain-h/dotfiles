@@ -1,3 +1,4 @@
+.ruff.toml
 ##### OSX
 .DS_Store
 .AppleDouble

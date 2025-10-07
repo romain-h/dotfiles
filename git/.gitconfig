@@ -18,6 +18,7 @@
   editor = nvim
   autocrlf = input
 	excludesfile = ~/.gitignore
+	deltaBaseCacheLimit = 2g
 
 [pull]
 	ff = only
@@ -44,7 +45,11 @@
 [includeIf "gitdir:~/src/github.com/monzo/"]
 	path = ~/.gitconfig-monzo
 
-[fetch]
-	writeCommitGraph = true
+; [fetch]
+	; writeCommitGraph = true
 [branch]
 	sort = -committerdate
+[pack]
+	packSizeLimit = 2g
+[fetch]
+	parallel = 10
