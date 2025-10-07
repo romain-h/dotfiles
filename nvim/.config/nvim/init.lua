@@ -2,6 +2,9 @@
 -- TODO Remove
 vim.g.have_nerd_font = true
 
+-- Check if started with --light flag
+local is_light_profile = vim.tbl_contains(vim.v.argv, "--light")
+
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
@@ -106,6 +109,9 @@ vim.keymap.set(
 	{ silent = true }
 )
 
+
+vim.g.python3_host_prog = '/Users/romainhardy/.local/share/uv/python/cpython-3.8.20-macos-aarch64-none/bin/python3.8'
+
 -- [[ Autocommands ]]
 
 -- Highlight when yanking (copying) text
@@ -206,11 +212,31 @@ require("lazy").setup({
 	-- Test helper
 	{
 		"vim-test/vim-test",
+		dependencies = { "jgdavey/tslime.vim" },
 		config = function()
 			vim.g["test#neovim#start_normal"] = 1
-			vim.g["test#strategy"] = "neovim_sticky"
-			vim.cmd("let test#neovim#term_position = 'vert botright 30'")
+			vim.g["test#strategy"] = "tslime"
+			vim.g.tslime_always_current_session = 1
+			vim.g.tslime_always_current_window = 1
+
+			vim.g["test#go#gotest#options"] = {
+				nearest = "-v",
+			}
 		end,
+		-- Use a custom strategy to parse the tmux pane not active
+		-- Function from tslime:
+		-- function! s:ActiveTarget()
+		-- return split(system('tmux list-panes -F "active=#{pane_active} #{session_name},#{window_index},#{pane_index}" | grep "active=1" | cut -d " " -f 2 | tr , "\n"'), '\n')
+		-- endfunction
+		--
+		--
+		-- function! EchoStrategy(cmd)
+		-- echo 'It works! Command for running tests: ' . a:cmd
+		-- endfunction
+
+		-- let g:test#custom_strategies = {'echo': function('EchoStrategy')}
+		-- let g:test#strategy = 'echo'
+
 	},
 
 	-- Commenting
@@ -226,7 +252,11 @@ require("lazy").setup({
 		"ellisonleao/gruvbox.nvim",
 		priority = 1000,
 		config = function()
-			vim.cmd("colorscheme gruvbox")
+			if is_light_profile then
+				vim.cmd("colorscheme default")
+			else
+				vim.cmd("colorscheme gruvbox")
+			end
 		end,
 	},
 	{
@@ -292,8 +322,13 @@ require("lazy").setup({
 	{ -- LSP Configuration & Plugins
 		"neovim/nvim-lspconfig",
 		dependencies = {
-			"williamboman/mason.nvim",
-			"williamboman/mason-lspconfig.nvim",
+      -- Automatically install LSPs and related tools to stdpath for Neovim
+      -- Mason must be loaded before its dependents so we need to set it up here.
+      -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
+      { 'mason-org/mason.nvim', opts = {} },
+      'mason-org/mason-lspconfig.nvim',
+      'WhoIsSethDaniel/mason-tool-installer.nvim',
+
 			-- Useful status updates for LSP.
 			{ "j-hui/fidget.nvim", opts = {} },
 
@@ -354,7 +389,8 @@ require("lazy").setup({
 					virtual_text = false,
 				})
 
-			local util = require("lspconfig/util")
+			-- local util = require("lspconfig/util")
+			--
 			-- LSP servers and clients are able to communicate to each other what features they support.
 			--  By default, Neovim doesn't support everything that is in the LSP specification.
 			--  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
@@ -370,19 +406,83 @@ require("lazy").setup({
 			--  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
 			--  - settings (table): Override the default settings passed when initializing the server.
 			local servers = {
-				-- LSP Golang settings
+				-- LSP Golang settings (disabled in light profile)
 				gopls = {
 					on_init = function(client)
 						local path = client.workspace_folders[1].name
 
 						if string.find(path, "monzo/wearedev") then
 							client.config.settings.gopls["local"] = "github.com/monzo/wearedev"
+
+							-- Wearedev-specific optimizations for large monorepo
+							client.config.settings.gopls["expandWorkspaceToModule"] = false
+
+							-- Extensive directory filtering for wearedev (no wildcards, specific patterns)
+							client.config.settings.gopls["directoryFilters"] = {
+								"-vendor",
+								"-node_modules",
+								"-static-check-rules",
+								"-tools",
+								"-bin",
+								"-docs",
+								"-examples",
+								"-infrastructure",
+								"-catalog",
+								"-aws-acm-pca-issuer",
+								"-base-manifests",
+								"-ecr-login-wrapper",
+								"-enclave-parent-runtime",
+								"-feast-features",
+								"-graphql-apollo-server-v2",
+								"-ipsec-exporter",
+								"-kafka-readiness",
+								"-keyspaces-check-rules",
+								-- Explicitly list some common service prefixes
+								"-cron.account-properties-export",
+								"-cron.ach-file-generator",
+								"-cron.additional-risk-assessment-reminders",
+								"-edge-proxy-external",
+								"-edge-proxy-internal",
+								"-lambda.dc-out-of-band-ssh-certs",
+								"-k8s-auditing-sidecar",
+								"-k8s-docker-journald-fix",
+								"-k8s-ec2-zone-writer",
+								"-interconnect-v2",
+								"-interconnect",
+								"-envoy-control-plane",
+								"-envoy-preflight",
+								"-envoy"
+							}
+
+							-- Disable expensive features for performance
+							client.config.settings.gopls["codelenses"] = {
+								generate = false,
+								gc_details = false,
+								test = false,
+								tidy = false,
+								regenerate_cgo = false,
+								upgrade_dependency = false,
+								vendor = false
+							}
+
+							-- Optimize UI for performance
+							client.config.settings.gopls["semanticTokens"] = false
+							client.config.settings.gopls["usePlaceholders"] = false
+							client.config.settings.gopls["matcher"] = "Fuzzy"
+							client.config.settings.gopls["diagnosticsDelay"] = "1s"
+							client.config.settings.gopls["staticcheck"] = false
+
+							client.config.settings.gopls["annotations"] = {
+								bounds = false,
+								escape = false,
+								inline = false
+							}
 						end
 
 						client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
 						return true
 					end,
-					cmd = { "gopls", "-remote=auto" },
+					-- cmd = { "gopls", "-remote=auto", "serve", "-rpc.trace", "--debug=localhost:6060" },
 					filetypes = { "go", "gomod" },
 
 					-- Ignore typical project roots which cause gopls to ingest large monorepos.
@@ -391,9 +491,7 @@ require("lazy").setup({
 
 					settings = {
 						gopls = {
-							-- Don't try to find the go.mod file, otherwise we ingest large monorepos
-							-- expandWorkspaceToModule = false,
-							-- memoryMode = "DegradeClosed",
+							-- Default settings for other repositories
 							directoryFilters = {
 								"-vendor",
 								"-manifests",
@@ -407,18 +505,45 @@ require("lazy").setup({
 						},
 					},
 				},
-				-- LSP Python settings
-				-- Type checking is performed with pip install pylsp-mypy
+				-- Python
 				pylsp = {
-					root_dir = util.root_pattern("pyproject.toml", "requirements.txt", ".git"),
-					plugins = {
-						-- use ruff with https://github.com/python-lsp/python-lsp-ruff
-						ruff = {
-							enabled = true,
-							formatEnabled = true,
-							format = { "I" },
+					settings = {
+						pylsp = {
+							plugins = {
+								pyflakes = { enabled = false },
+								pycodestyle = { enabled = false },
+								autopep8 = { enabled = false },
+								yapf = { enabled = false },
+								mccabe = { enabled = false },
+								pylsp_mypy = { enabled = false },
+								pylsp_black = { enabled = false },
+								pylsp_isort = { enabled = false },
+							},
 						},
 					},
+				},
+				-- pyright = {
+					-- settings = {
+						-- pyright = {
+							-- -- Using Ruff's import organizer
+							-- disableOrganizeImports = true,
+						-- },
+						-- python = {
+							-- analysis = {
+								-- -- Ignore all files for analysis to exclusively use Ruff for linting
+								-- ignore = { '*' },
+							-- },
+						-- },
+					-- },
+				-- },
+
+				ruff = {
+					on_attach = function(client, bufnr)
+						if client.name == 'ruff' then
+							-- Disable hover in favor of pylsp
+							client.server_capabilities.hoverProvider = false
+						end
+					end
 				},
 
 				-- LSP TypeScript settings
@@ -460,51 +585,141 @@ require("lazy").setup({
 				},
 
 				-- LSP YAML settings
-				yamlls = {},
+				yamlls = {
+					on_init = function(client)
+						local path = client.workspace_folders[1].name
+
+						if string.find(path, "monzo/wearedev") then
+							client.config.settings.yaml.schemas = vim.tbl_extend("force", client.config.settings.yaml.schemas, {
+								["./libraries/fincrime/ruleslib/schemas/rule_description.json"] = "*.rule.{yaml,yml}",
+								["./libraries/cassandra/schema/schema.bundled.generated.json"] = "*/config/schema.yml"
+							})
+						end
+
+						client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
+						return true
+					end,
+					settings = {
+						yaml = {
+							schemas = {}
+						}
+					}
+				},
 
 				-- LSP Bash shell
 				bashls = {},
 			}
 
-			-- Without Mason
-			-- Iterate over the servers table and setup each server
-			-- for server_name, server in pairs(servers) do
-			-- -- This handles overriding only values explicitly passed
-			-- -- by the server configuration above. Useful when disabling
-			-- -- certain features of an LSP (for example, turning off formatting for tsserver)
-			-- server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-			-- require("lspconfig")[server_name].setup(server)
-			-- end
+			if is_light_profile then
+				-- Tweak gopls
+				servers.gopls = {
+					on_init = function(client)
+						local path = client.workspace_folders[1].name
 
-			-- With Mason
-			-- Ensure the servers and tools above are installed
-			--  To check the current status of installed tools and/or manually install
-			--  other tools, you can run
-			--    :Mason
-			--
-			--  You can press `g?` for help in this menu.
-			require("mason").setup()
+						if string.find(path, "monzo/wearedev") then
+							client.config.settings.gopls["local"] = "github.com/monzo/wearedev"
 
-			require("mason-lspconfig").setup({
-				ensure_installed = {
-					-- "gopls", Installed without Mason to use specific version
-					"bashls",
-					"lua_ls",
-					"pylsp",
-					"ts_ls",
-					"yamlls",
-				},
-				handlers = {
-					function(server_name)
-						local server = servers[server_name] or {}
-						-- This handles overriding only values explicitly passed
-						-- by the server configuration above. Useful when disabling
-						-- certain features of an LSP (for example, turning off formatting for tsserver)
-						server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-						require("lspconfig")[server_name].setup(server)
+							-- Wearedev-specific optimizations for large monorepo
+							client.config.settings.gopls["expandWorkspaceToModule"] = false
+
+							-- Extensive directory filtering for wearedev (no wildcards, specific patterns)
+							client.config.settings.gopls["directoryFilters"] = {
+								"-vendor",
+								"-node_modules",
+								"-static-check-rules",
+								"-tools",
+								"-bin",
+								"-docs",
+								"-examples",
+								"-infrastructure",
+								"-catalog",
+								"-aws-acm-pca-issuer",
+								"-base-manifests",
+								"-ecr-login-wrapper",
+								"-enclave-parent-runtime",
+								"-feast-features",
+								"-graphql-apollo-server-v2",
+								"-ipsec-exporter",
+								"-kafka-readiness",
+								"-keyspaces-check-rules",
+								-- Explicitly list some common service prefixes
+								"-cron.account-properties-export",
+								"-cron.ach-file-generator",
+								"-cron.additional-risk-assessment-reminders",
+								"-edge-proxy-external",
+								"-edge-proxy-internal",
+								"-lambda.dc-out-of-band-ssh-certs",
+								"-k8s-auditing-sidecar",
+								"-k8s-docker-journald-fix",
+								"-k8s-ec2-zone-writer",
+								"-interconnect-v2",
+								"-interconnect",
+								"-envoy-control-plane",
+								"-envoy-preflight",
+								"-envoy"
+							}
+
+							-- Disable expensive features for performance
+							client.config.settings.gopls["codelenses"] = {
+								generate = false,
+								gc_details = false,
+								test = false,
+								tidy = false,
+								regenerate_cgo = false,
+								upgrade_dependency = false,
+								run_govulncheck = false,
+								vendor = false
+							}
+
+						end
+
+						client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
+						return true
 					end,
-				},
-			})
+					-- cmd = { "gopls", "-remote=auto", "serve", "-rpc.trace", "--debug=localhost:6060" },
+					filetypes = { "go", "gomod" },
+
+					-- Ignore typical project roots which cause gopls to ingest large monorepos.
+					--root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+					-- root_dir = util.root_pattern("main.go", "README.md", "LICENSE"),
+
+					-- settings = {
+						-- gopls = {},
+					-- },
+				}
+			end
+
+			--
+			-- Ensure the servers and tools above are installed
+      --
+      -- To check the current status of installed tools and/or manually install
+      -- other tools, you can run
+      --    :Mason
+      --
+      -- You can press `g?` for help in this menu.
+      --
+      -- `mason` had to be setup earlier: to configure its options see the
+      -- `dependencies` table for `nvim-lspconfig` above.
+      --
+      -- You can add other tools here that you want Mason to install
+      -- for you, so that they are available from within Neovim.
+      local ensure_installed = vim.tbl_keys(servers or {})
+      vim.list_extend(ensure_installed, {
+        'stylua', -- Used to format Lua code
+      })
+      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+
+			require('mason-lspconfig').setup {
+        automatic_enable = vim.tbl_keys(servers or {}),
+      }
+
+			-- Installed LSPs are configured and enabled automatically with mason-lspconfig
+      -- The loop below is for overriding the default configuration of LSPs with the ones in the servers table
+      for server_name, config in pairs(servers) do
+				config.capabilities = vim.tbl_deep_extend("force", config.capabilities or {}, capabilities)
+        vim.lsp.config(server_name, config)
+			end
+
 		end,
 	},
 
@@ -541,7 +756,7 @@ require("lazy").setup({
 					sh = { "shfmt" },
 					graphql = { "prettier" },
 					-- Conform can also run multiple formatters sequentially
-					-- python = { "isort", "black" },
+					-- python = { "ruff_format", "ruff_fix", "ruff_organize_import" }
 					--
 					-- You can use a sub-list to tell conform to run *until* a formatter
 					-- is found.
@@ -609,6 +824,14 @@ require("lazy").setup({
 					{ name = "buffer" },
 					{ name = "path" },
 				},
+				filetype = {
+					sql = {
+						source = {
+							{ name = "vim-dadbod-completion" },
+							{ name = "buffer" },
+						},
+					},
+				}
 			})
 		end,
 	},
@@ -623,6 +846,24 @@ require("lazy").setup({
 				replace_keycodes = false,
 			})
 		end,
+	},
+
+	{ -- Github Copilot Chat. Not officially supported by Github.
+		"CopilotC-Nvim/CopilotChat.nvim",
+		dependencies = {
+			-- { "github/copilot.vim" }, -- or zbirenbaum/copilot.lua
+			{ "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
+		},
+		build = "make tiktoken", -- Only on MacOS or Linux
+		-- check https://github.com/jellydn/lazy-nvim-ide/blob/main/lua/plugins/extras/copilot-chat-v2.lua
+		opts = {
+			model = "claude-3.7-sonnet"
+		}
+	},
+
+	{ -- D2 language support
+		"terrastruct/d2-vim",
+		ft = { "d2" },
 	},
 
 	{ -- Collection of various small independent plugins/modules
@@ -692,6 +933,13 @@ require("lazy").setup({
 			--    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
 		end,
 	},
+	{
+		"tpope/vim-dadbod",
+		dependencies = {
+			"kristijanhusak/vim-dadbod-completion",
+			"kristijanhusak/vim-dadbod-ui",
+		},
+	},
 	require 'kickstart.plugins.debug',
 	-- require 'kickstart.plugins.indent_line',
 	-- require 'kickstart.plugins.lint',
@@ -743,3 +991,54 @@ function CopyRelativePath()
 
 	print("Copied relative path to system clipboard: " .. relative_path)
 end
+
+
+-- Protobuf helper
+function GenerateProtobufs()
+  local current_file_path = vim.api.nvim_buf_get_name(0)
+  local base_pattern = "(service%.[^/]+)/proto"
+
+  local base_path = current_file_path:match(base_pattern)
+  if base_path then
+    local cmd = "./bin/generate_protobufs " .. base_path .. "/proto"
+    vim.cmd("!" .. cmd)
+  else
+    print("Current buffer is not in the expected path.")
+  end
+end
+
+-- Expose the function as a command
+vim.api.nvim_create_user_command('RBGenerateProtobufs', GenerateProtobufs, { desc = "Generate Protobufs" })
+
+-- Optionally, you can map this function to a keybinding if you want
+vim.keymap.set("n", "<leader>gp", GenerateProtobufs, { desc = "Generate Protobufs" })
+
+-- Copy current file path
+vim.keymap.set("n", "<leader>cp", CopyRelativePath, { desc = "Copy current file path" })
+
+-- Function to limit the number of vertical splits
+local function limit_vertical_splits()
+  -- Set the maximum number of vertical splits allowed
+  local max_vertical_splits = 2
+
+  -- Get the current number of vertical splits
+  local vertical_splits = 0
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local win_info = vim.fn.getwininfo(win)[1]
+    if win_info.width < vim.o.columns / 2 then
+      vertical_splits = vertical_splits + 1
+    end
+  end
+
+  -- If the number of vertical splits exceeds the maximum, close the new split
+  if vertical_splits > max_vertical_splits then
+    print("Maximum number of vertical splits reached!")
+    vim.cmd('close')
+  end
+end
+
+-- Create an autocommand to check the number of vertical splits on each window creation
+-- vim.api.nvim_create_autocmd("WinNew", {
+  -- pattern = "*",
+  -- callback = limit_vertical_splits
+-- })
