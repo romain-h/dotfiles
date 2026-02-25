@@ -57,6 +57,11 @@ vim.opt.guicursor = ""
 vim.opt.termguicolors = true
 vim.opt.smartindent = true
 vim.opt.clipboard = "unnamedplus"
+-- force use of pbcopy on macOS
+vim.g.clipboard = "pbcopy"
+
+-- Leader keys
+vim.g.maplocalleader = ";"
 
 -- Keep signcolumn on by default
 vim.opt.signcolumn = "yes"
@@ -91,6 +96,7 @@ vim.keymap.set("n", "<leader>m", ":Marks<CR>")
 vim.keymap.set("n", "<leader>f", ":Crg<Space>")
 vim.keymap.set("n", "<leader>F", ":Crg <C-R><C-W><CR>") -- Grep word under cursor
 vim.keymap.set("n", "<leader>fd", ":Crgfd<Space>")
+vim.keymap.set("n", "<leader>fc", ":Crgfc<Space>")
 
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 
@@ -184,6 +190,18 @@ if vim.fn.executable("rg") == 1 then
 		end
 
 		vim.cmd({ cmd = "Crg", args = { "-g", "'" .. pattern .. "/**/*'", unpack(opts.fargs) } })
+	end, { nargs = "*" })
+
+	-- Search in fincrime-actions services using external script
+	vim.api.nvim_create_user_command("Crgfc", function(opts)
+		-- Save current grepprg
+		local original_grepprg = vim.o.grepprg
+		-- Set to use rg-fc
+		vim.o.grepprg = "rg-fc -H --no-heading --vimgrep"
+		-- Run grep
+		vim.cmd("grep! " .. table.concat(opts.fargs, " ") .. "|botright cw|redraw!")
+		-- Restore grepprg
+		vim.o.grepprg = original_grepprg
 	end, { nargs = "*" })
 end
 
@@ -350,7 +368,21 @@ require("lazy").setup({
 
 					map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 					map("gd", vim.lsp.buf.definition, "[G]oto [D]efinition")
-					map("gr", vim.lsp.buf.references, "[G]oto [R]eferences")
+
+					-- For gopls in wearedev, use custom grep instead of LSP references
+					local client = vim.lsp.get_client_by_id(event.data.client_id)
+					if client and client.name == "gopls" then
+						local workspace_path = client.workspace_folders and client.workspace_folders[1].name or ""
+						if string.find(workspace_path, "monzo/wearedev") then
+							-- Use custom grep for references in wearedev
+							-- vim.keymap.set("n", "gr", ":Crg <C-R><C-W><CR>", { buffer = event.buf, desc = "LSP: Grep [R]eferences" })
+						else
+							map("gr", vim.lsp.buf.references, "[G]oto [R]eferences")
+						end
+					else
+						map("gr", vim.lsp.buf.references, "[G]oto [R]eferences")
+					end
+
 					map("gi", vim.lsp.buf.implementation, "[G]oto [I]mplementation")
 					map("<space>D", vim.lsp.buf.type_definition, "Type [D]efinition")
 					-- map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
@@ -406,89 +438,22 @@ require("lazy").setup({
 			--  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
 			--  - settings (table): Override the default settings passed when initializing the server.
 			local servers = {
-				-- LSP Golang settings (disabled in light profile)
+				-- LSP Golang settings
 				gopls = {
 					on_init = function(client)
 						local path = client.workspace_folders[1].name
 
+						-- For Monzo wearedev repo, set the gopls local module
 						if string.find(path, "monzo/wearedev") then
 							client.config.settings.gopls["local"] = "github.com/monzo/wearedev"
-
-							-- Wearedev-specific optimizations for large monorepo
-							client.config.settings.gopls["expandWorkspaceToModule"] = false
-
-							-- Extensive directory filtering for wearedev (no wildcards, specific patterns)
-							client.config.settings.gopls["directoryFilters"] = {
-								"-vendor",
-								"-node_modules",
-								"-static-check-rules",
-								"-tools",
-								"-bin",
-								"-docs",
-								"-examples",
-								"-infrastructure",
-								"-catalog",
-								"-aws-acm-pca-issuer",
-								"-base-manifests",
-								"-ecr-login-wrapper",
-								"-enclave-parent-runtime",
-								"-feast-features",
-								"-graphql-apollo-server-v2",
-								"-ipsec-exporter",
-								"-kafka-readiness",
-								"-keyspaces-check-rules",
-								-- Explicitly list some common service prefixes
-								"-cron.account-properties-export",
-								"-cron.ach-file-generator",
-								"-cron.additional-risk-assessment-reminders",
-								"-edge-proxy-external",
-								"-edge-proxy-internal",
-								"-lambda.dc-out-of-band-ssh-certs",
-								"-k8s-auditing-sidecar",
-								"-k8s-docker-journald-fix",
-								"-k8s-ec2-zone-writer",
-								"-interconnect-v2",
-								"-interconnect",
-								"-envoy-control-plane",
-								"-envoy-preflight",
-								"-envoy"
-							}
-
-							-- Disable expensive features for performance
-							client.config.settings.gopls["codelenses"] = {
-								generate = false,
-								gc_details = false,
-								test = false,
-								tidy = false,
-								regenerate_cgo = false,
-								upgrade_dependency = false,
-								vendor = false
-							}
-
-							-- Optimize UI for performance
-							client.config.settings.gopls["semanticTokens"] = false
-							client.config.settings.gopls["usePlaceholders"] = false
-							client.config.settings.gopls["matcher"] = "Fuzzy"
-							client.config.settings.gopls["diagnosticsDelay"] = "1s"
-							client.config.settings.gopls["staticcheck"] = false
-
-							client.config.settings.gopls["annotations"] = {
-								bounds = false,
-								escape = false,
-								inline = false
-							}
 						end
 
 						client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
 						return true
 					end,
+					cmd = { "monzo-gopls" },
 					-- cmd = { "gopls", "-remote=auto", "serve", "-rpc.trace", "--debug=localhost:6060" },
 					filetypes = { "go", "gomod" },
-
-					-- Ignore typical project roots which cause gopls to ingest large monorepos.
-					--root_dir = util.root_pattern("go.work", "go.mod", ".git"),
-					-- root_dir = util.root_pattern("main.go", "README.md", "LICENSE"),
-
 					settings = {
 						gopls = {
 							-- Default settings for other repositories
