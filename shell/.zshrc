@@ -27,6 +27,10 @@ if [ -f "$HOME/.shell/tools" ]; then
   source $HOME/.shell/tools
 fi
 
+if [ -f "$HOME/.env_dotfiles_private" ]; then
+  source $HOME/.env_dotfiles_private
+fi
+
 # Source custom env that will not be tracked
 if [ -f "$HOME/.env_custom" ]; then
   source $HOME/.env_custom
