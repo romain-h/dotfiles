@@ -107,16 +107,10 @@ vim.keymap.set("n", "<leader>T", ":TestFile<CR>")
 -- Replace base64 content with decoded content
 vim.keymap.set("v", "<leader>64", [[c<c-r>=system('base64 --decode', @")<cr><esc>]], {})
 
--- Monzo specific
-vim.keymap.set(
-	"n",
-	"gh",
-	":let pp=getpos('.')<CR>:let res=split(system('handlertool '.shellescape(expand('%:p').':'.line('.').':'.col('.'))), ':')<CR>:e <C-R>=res[0]<CR><CR>:call setpos('.',[pp[0],res[1],res[2],0])<CR>",
-	{ silent = true }
-)
-
-
 vim.g.python3_host_prog = '/Users/romainhardy/.local/share/uv/python/cpython-3.8.20-macos-aarch64-none/bin/python3.8'
+
+-- Load Monzo-specific keymaps (noop if module doesn't exist)
+pcall(require, "monzo.keymaps")
 
 -- [[ Autocommands ]]
 
@@ -212,7 +206,10 @@ if not vim.loop.fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
 	vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
 end ---@diagnostic disable-next-line: undefined-field
+
+-- Runtime
 vim.opt.rtp:prepend(lazypath)
+
 
 -- [[ Configure and install plugins ]]
 -- Use `opts = {}` to force a plugin to be loaded. This is equivalent to:
@@ -369,19 +366,7 @@ require("lazy").setup({
 					map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 					map("gd", vim.lsp.buf.definition, "[G]oto [D]efinition")
 
-					-- For gopls in wearedev, use custom grep instead of LSP references
-					local client = vim.lsp.get_client_by_id(event.data.client_id)
-					if client and client.name == "gopls" then
-						local workspace_path = client.workspace_folders and client.workspace_folders[1].name or ""
-						if string.find(workspace_path, "monzo/wearedev") then
-							-- Use custom grep for references in wearedev
-							-- vim.keymap.set("n", "gr", ":Crg <C-R><C-W><CR>", { buffer = event.buf, desc = "LSP: Grep [R]eferences" })
-						else
-							map("gr", vim.lsp.buf.references, "[G]oto [R]eferences")
-						end
-					else
-						map("gr", vim.lsp.buf.references, "[G]oto [R]eferences")
-					end
+					map("gr", vim.lsp.buf.references, "[G]oto [R]eferences")
 
 					map("gi", vim.lsp.buf.implementation, "[G]oto [I]mplementation")
 					map("<space>D", vim.lsp.buf.type_definition, "Type [D]efinition")
@@ -441,17 +426,9 @@ require("lazy").setup({
 				-- LSP Golang settings
 				gopls = {
 					on_init = function(client)
-						local path = client.workspace_folders[1].name
-
-						-- For Monzo wearedev repo, set the gopls local module
-						if string.find(path, "monzo/wearedev") then
-							client.config.settings.gopls["local"] = "github.com/monzo/wearedev"
-						end
-
 						client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
 						return true
 					end,
-					cmd = { "monzo-gopls" },
 					-- cmd = { "gopls", "-remote=auto", "serve", "-rpc.trace", "--debug=localhost:6060" },
 					filetypes = { "go", "gomod" },
 					settings = {
@@ -512,7 +489,7 @@ require("lazy").setup({
 				},
 
 				-- LSP TypeScript settings
-				ts_ls = {},
+				vtsls = {},
 
 				-- LSP Lua (with NeoVim) settings
 				lua_ls = {
@@ -552,15 +529,6 @@ require("lazy").setup({
 				-- LSP YAML settings
 				yamlls = {
 					on_init = function(client)
-						local path = client.workspace_folders[1].name
-
-						if string.find(path, "monzo/wearedev") then
-							client.config.settings.yaml.schemas = vim.tbl_extend("force", client.config.settings.yaml.schemas, {
-								["./libraries/fincrime/ruleslib/schemas/rule_description.json"] = "*.rule.{yaml,yml}",
-								["./libraries/cassandra/schema/schema.bundled.generated.json"] = "*/config/schema.yml"
-							})
-						end
-
 						client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
 						return true
 					end,
@@ -574,6 +542,14 @@ require("lazy").setup({
 				-- LSP Bash shell
 				bashls = {},
 			}
+
+			-- Layer Monzo-specific LSP overrides (noop if module doesn't exist)
+			local ok, monzo_lsp = pcall(require, "monzo.lsp")
+			if ok then
+				for name, overrides in pairs(monzo_lsp.server_overrides(servers)) do
+					servers[name] = vim.tbl_deep_extend("force", servers[name] or {}, overrides)
+				end
+			end
 
 			if is_light_profile then
 				-- Tweak gopls
@@ -915,6 +891,12 @@ require("lazy").setup({
 	--  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
 	--    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
 	-- { import = 'custom.plugins' },
+
+	-- Monzo-specific plugins (noop if module doesn't exist)
+	unpack((function()
+		local ok, mp = pcall(require, "monzo.plugins")
+		return ok and mp or {}
+	end)()),
 }, {
 	ui = {},
 })
@@ -957,26 +939,6 @@ function CopyRelativePath()
 	print("Copied relative path to system clipboard: " .. relative_path)
 end
 
-
--- Protobuf helper
-function GenerateProtobufs()
-  local current_file_path = vim.api.nvim_buf_get_name(0)
-  local base_pattern = "(service%.[^/]+)/proto"
-
-  local base_path = current_file_path:match(base_pattern)
-  if base_path then
-    local cmd = "./bin/generate_protobufs " .. base_path .. "/proto"
-    vim.cmd("!" .. cmd)
-  else
-    print("Current buffer is not in the expected path.")
-  end
-end
-
--- Expose the function as a command
-vim.api.nvim_create_user_command('RBGenerateProtobufs', GenerateProtobufs, { desc = "Generate Protobufs" })
-
--- Optionally, you can map this function to a keybinding if you want
-vim.keymap.set("n", "<leader>gp", GenerateProtobufs, { desc = "Generate Protobufs" })
 
 -- Copy current file path
 vim.keymap.set("n", "<leader>cp", CopyRelativePath, { desc = "Copy current file path" })
