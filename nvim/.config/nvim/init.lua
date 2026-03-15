@@ -107,8 +107,6 @@ vim.keymap.set("n", "<leader>T", ":TestFile<CR>")
 -- Replace base64 content with decoded content
 vim.keymap.set("v", "<leader>64", [[c<c-r>=system('base64 --decode', @")<cr><esc>]], {})
 
-vim.g.python3_host_prog = '/Users/romainhardy/.local/share/uv/python/cpython-3.8.20-macos-aarch64-none/bin/python3.8'
-
 -- Load Monzo-specific keymaps (noop if module doesn't exist)
 pcall(require, "monzo.keymaps")
 
