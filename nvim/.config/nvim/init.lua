@@ -2,9 +2,6 @@
 -- TODO Remove
 vim.g.have_nerd_font = true
 
--- Check if started with --light flag
-local is_light_profile = vim.tbl_contains(vim.v.argv, "--light")
-
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
@@ -265,11 +262,7 @@ require("lazy").setup({
 		"ellisonleao/gruvbox.nvim",
 		priority = 1000,
 		config = function()
-			if is_light_profile then
-				vim.cmd("colorscheme default")
-			else
-				vim.cmd("colorscheme gruvbox")
-			end
+			vim.cmd("colorscheme gruvbox")
 		end,
 	},
 	{
