@@ -128,6 +128,18 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	end,
 })
 
+vim.api.nvim_create_autocmd("BufWritePre", {
+	desc = "add missing imports for TS/JS on save",
+	group = vim.api.nvim_create_augroup("ts-import-on-save", { clear = true }),
+	pattern = { "*.ts", "*.tsx", "*.js", "*.jsx" },
+	callback = function()
+		vim.lsp.buf.code_action({
+			apply = true,
+			context = { only = { "source.addMissingImports" }, diagnostics = {} },
+		})
+	end,
+})
+
 vim.api.nvim_create_autocmd("FileType", {
 	desc = "set colorcolumn for Golang",
 	group = vim.api.nvim_create_augroup("go-filetype", { clear = true }),
@@ -702,6 +714,15 @@ require("lazy").setup({
 					bash = { "shfmt" },
 					sh = { "shfmt" },
 					graphql = { "prettier" },
+					javascript = { "prettier" },
+					javascriptreact = { "prettier" },
+					typescript = { "prettier" },
+					typescriptreact = { "prettier" },
+					css = { "prettier" },
+					json = { "prettier" },
+					html = { "prettier" },
+					yaml = { "prettier" },
+					markdown = { "prettier" },
 					-- Conform can also run multiple formatters sequentially
 					-- python = { "ruff_format", "ruff_fix", "ruff_organize_import" }
 					--
@@ -715,7 +736,7 @@ require("lazy").setup({
 			vim.api.nvim_create_autocmd("BufWritePre", {
 				desc = "format on save",
 				group = vim.api.nvim_create_augroup("format-on-save", { clear = true }),
-				pattern = { "*.go", "*.py", "*.graphql" },
+				pattern = { "*.go", "*.py", "*.graphql", "*.js", "*.jsx", "*.ts", "*.tsx", "*.css", "*.html", "*.json", "*.yaml", "*.md" },
 				callback = function(args)
 					-- Equivalent to vim.lsp.buf.format({ async = false })
 					cfm.format({ bufnr = args.buf, lsp_fallback = "always" })
