@@ -93,6 +93,7 @@ vim.keymap.set("n", "<leader>m", ":Marks<CR>")
 vim.keymap.set("n", "<leader>f", ":Crg<Space>")
 vim.keymap.set("n", "<leader>F", ":Crg <C-R><C-W><CR>") -- Grep word under cursor
 vim.keymap.set("n", "<leader>fd", ":Crgfd<Space>")
+vim.keymap.set("n", "<leader>fr", ":Crgfr<Space>")
 vim.keymap.set("n", "<leader>fc", ":Crgfc<Space>")
 
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
@@ -170,15 +171,29 @@ if vim.fn.executable("rg") == 1 then
 
 	-- Search within the current file's directory
 	vim.api.nvim_create_user_command("Crgfd", function(opts)
-		local current_file_path = CurrentRelativeFilePath()
+		local dir = vim.fn.expand("%:h")
 
-		local pattern = current_file_path:match("^([^/]+)")
-		-- Default to the original rg command if we can't find a pattern
-		if pattern == nil then
+		-- Default to the original rg command if we can't determine the directory
+		if dir == "" or dir == "." then
 			vim.cmd({ cmd = "Crg", args = { unpack(opts.fargs) } })
+			return
 		end
 
-		vim.cmd({ cmd = "Crg", args = { "-g", "'" .. pattern .. "/**/*'", unpack(opts.fargs) } })
+		vim.cmd({ cmd = "Crg", args = { "-g", "'" .. dir .. "/**/*'", unpack(opts.fargs) } })
+	end, { nargs = "*" })
+
+	-- Search within the first directory (root) of the current file's relative path
+	vim.api.nvim_create_user_command("Crgfr", function(opts)
+		local rel_path = CurrentRelativeFilePath()
+		local root = rel_path:match("^([^/]+)")
+
+		-- Default to the original rg command if the file is at the root
+		if root == nil or root == rel_path then
+			vim.cmd({ cmd = "Crg", args = { unpack(opts.fargs) } })
+			return
+		end
+
+		vim.cmd({ cmd = "Crg", args = { "-g", "'" .. root .. "/**/*'", unpack(opts.fargs) } })
 	end, { nargs = "*" })
 
 	-- Search in fincrime-actions services using external script
