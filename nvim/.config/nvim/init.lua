@@ -961,11 +961,24 @@ require("lazy").setup({
 			--  Check out: https://github.com/echasnovski/mini.nvim
 		end,
 	},
+	{ -- Markdown rendering inline (headings, bullets, code blocks, checkboxes)
+		"MeanderingProgrammer/render-markdown.nvim",
+		ft = { "markdown" },
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		opts = {},
+	},
+
+	{ -- Glow preview in a floating window (:Glow)
+		"ellisonleao/glow.nvim",
+		cmd = "Glow",
+		opts = {},
+	},
+
 	{ -- Highlight, edit, and navigate code
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		opts = {
-			ensure_installed = { "bash", "c", "html", "lua", "luadoc", "markdown", "vim", "vimdoc", "go", "python" },
+			ensure_installed = { "bash", "c", "html", "lua", "luadoc", "markdown", "markdown_inline", "vim", "vimdoc", "go", "python" },
 			-- Autoinstall languages that are not installed
 			auto_install = true,
 			highlight = {
