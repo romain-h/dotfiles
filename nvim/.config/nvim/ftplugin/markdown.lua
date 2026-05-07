@@ -12,10 +12,13 @@ vim.opt_local.spelllang = "en_us"
 
 vim.opt_local.conceallevel = 2
 
-local function copy_as_rich_text()
+-- Copy visual selection as rich text (RTF) to system clipboard
+vim.keymap.set("v", "<leader>rc", function()
+  vim.cmd('normal! "zy')
+  local text = vim.fn.getreg("z")
   local tmpfile = vim.fn.tempname() .. ".md"
   local f = io.open(tmpfile, "w")
-  f:write(vim.fn.getreg('"'))
+  f:write(text)
   f:close()
   vim.fn.system(
     "pandoc " .. vim.fn.shellescape(tmpfile) .. " -f gfm -t html"
@@ -23,9 +26,11 @@ local function copy_as_rich_text()
       .. " | pbcopy"
   )
   os.remove(tmpfile)
-end
+  vim.notify("Copied as rich text")
+end, { buffer = true, desc = "Copy selection as rich text" })
 
-local function paste_as_markdown(after)
+-- Paste clipboard HTML content as Markdown
+vim.keymap.set("n", "<leader>rp", function()
   local jxa = [[
     ObjC.import('AppKit');
     var pb = $.NSPasteboard.generalPasteboard;
@@ -34,10 +39,8 @@ local function paste_as_markdown(after)
   ]]
   local html = vim.fn.system("osascript -l JavaScript -e " .. vim.fn.shellescape(jxa))
 
-  -- No HTML on clipboard — fall back to default paste
   if vim.v.shell_error ~= 0 or html:match("^%s*$") then
-    vim.cmd("normal! " .. (after and "p" or "P"))
-    return
+    html = vim.fn.system("pbpaste")
   end
 
   local tmpfile = vim.fn.tempname() .. ".html"
@@ -46,32 +49,11 @@ local function paste_as_markdown(after)
   f:close()
 
   local result = vim.fn.system(
-    "pandoc " .. vim.fn.shellescape(tmpfile) .. " -f html -t gfm --wrap=none"
+    "pandoc " .. vim.fn.shellescape(tmpfile) .. " -f html -t gfm-raw_html --wrap=none"
   )
   os.remove(tmpfile)
 
   result = result:gsub("\n$", "")
   local lines = vim.split(result, "\n")
-  vim.api.nvim_put(lines, "l", after, true)
-end
-
--- yy yanks and also copies as rich text to system clipboard
-vim.keymap.set("n", "yy", function()
-  vim.cmd('normal! "0yy')
-  vim.fn.setreg('"', vim.fn.getreg("0"))
-  copy_as_rich_text()
-end, { buffer = true, desc = "Yank line + copy as rich text" })
-
--- y in visual mode yanks and also copies as rich text
-vim.keymap.set("v", "y", function()
-  vim.cmd('normal! "0y')
-  vim.fn.setreg('"', vim.fn.getreg("0"))
-  copy_as_rich_text()
-end, { buffer = true, desc = "Yank selection + copy as rich text" })
-
--- p/P paste from clipboard as markdown when HTML is available
-vim.keymap.set("n", "p", function() paste_as_markdown(true) end,
-  { buffer = true, desc = "Paste (after) as Markdown" })
-
-vim.keymap.set("n", "P", function() paste_as_markdown(false) end,
-  { buffer = true, desc = "Paste (before) as Markdown" })
+  vim.api.nvim_put(lines, "l", true, true)
+end, { buffer = true, desc = "Paste clipboard as Markdown" })
