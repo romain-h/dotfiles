@@ -1073,6 +1073,15 @@ end
 -- Copy current file path
 vim.keymap.set("n", "<leader>cp", CopyRelativePath, { desc = "Copy current file path" })
 
+-- Insert a UUID at cursor
+local function insert_uuid()
+  local id = vim.fn.system("uuidgen"):gsub("%s+$", ""):lower()
+  vim.api.nvim_put({ id }, "c", true, true)
+end
+
+vim.keymap.set("n", "<leader>uu", insert_uuid, { desc = "Insert UUID" })
+vim.keymap.set("i", "<C-u>", insert_uuid, { desc = "Insert UUID" })
+
 -- Function to limit the number of vertical splits
 local function limit_vertical_splits()
   -- Set the maximum number of vertical splits allowed
