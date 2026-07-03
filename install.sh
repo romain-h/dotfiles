@@ -2,7 +2,7 @@
 
 TARGET="$HOME"
 BIN="/usr/local/bin"
-HOME_SYMLINKS="alacritty bat git nvim ripgrep shell tmux"
+HOME_SYMLINKS="aerospace alacritty bat git nvim ripgrep shell tmux"
 BIN_SYMLINKS="bin"
 
 BREW_LIST="bat bc curl exif exiftool ffmpeg fzf git gnu-sed \
@@ -10,7 +10,7 @@ BREW_LIST="bat bc curl exif exiftool ffmpeg fzf git gnu-sed \
     rename ripgrep shellcheck shfmt stow \
     tmux neovim vim wget zsh"
 
-BREW_LIST_CASK="alacritty calibre font-commit-mono-nerd-font rectangle spotify slack"
+BREW_LIST_CASK="nikitabobko/tap/aerospace alacritty calibre font-commit-mono-nerd-font rectangle spotify slack"
 
 prompt_confirm() {
   while true; do

@@ -1,3 +1,4 @@
+lefthook-local.yml
 .ruff.toml
 ##### OSX
 .DS_Store
@@ -88,3 +89,5 @@ node_modules/
 # ASDF
 .tool-versions
 .envrc
+
+**/.claude/settings.local.json

@@ -1,0 +1,166 @@
+# AeroSpace config — Vim-like (based on the official default config)
+# Reference: https://nikitabobko.github.io/AeroSpace/guide
+# Commands:  https://nikitabobko.github.io/AeroSpace/commands
+#
+# $mod is ctrl-alt (Caps Lock remapped to Ctrl+Alt). This provides a dedicated
+# hyper key for Aerospace without shadowing special character composition or
+# conflicting with system shortcuts.
+
+# Run after AeroSpace startup.
+after-startup-command = []
+
+# Start AeroSpace at login.
+start-at-login = true
+
+# Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+# Size of accordion padding. Set to 0 to disable.
+accordion-padding = 30
+
+# Possible values: tiles|accordion
+default-root-container-layout = 'tiles'
+
+# Possible values: horizontal|vertical|auto
+# 'auto': wide monitor -> horizontal, tall monitor -> vertical.
+default-root-container-orientation = 'auto'
+
+# Mouse follows focus when the focused monitor changes.
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+
+# Turn off macOS "Hide application" (cmd-h).
+automatically-unhide-macos-hidden-apps = false
+
+# Possible values: (qwerty|dvorak|colemak)
+[key-mapping]
+    preset = 'qwerty'
+
+# Gaps between windows (inner-*) and monitor edges (outer-*).
+[gaps]
+    inner.horizontal = 0
+    inner.vertical =   0
+    outer.left =       0
+    outer.bottom =     0
+    outer.top =        0
+    outer.right =      0
+
+# ──────────────────────────────────────────────
+# MAIN BINDINGS — All use Ctrl+Alt (Caps Lock)
+# ──────────────────────────────────────────────
+[mode.main.binding]
+
+    # Layout.
+    ctrl-alt-slash = 'layout tiles horizontal vertical'
+    ctrl-alt-comma = 'layout accordion horizontal vertical'
+
+    # Vim-style focus (h/j/k/l)
+    ctrl-alt-h = 'focus left'
+    ctrl-alt-j = 'focus down'
+    ctrl-alt-k = 'focus up'
+    ctrl-alt-l = 'focus right'
+
+
+    # Move window (add shift).
+    ctrl-alt-shift-h = 'move left'
+    ctrl-alt-shift-j = 'move down'
+    ctrl-alt-shift-k = 'move up'
+    ctrl-alt-shift-l = 'move right'
+
+    # Resize.
+    ctrl-alt-minus = 'resize smart -50'
+    ctrl-alt-equal = 'resize smart +50'
+
+    # Switch to workspace.
+    ctrl-alt-1 = 'workspace 1'
+    ctrl-alt-2 = 'workspace 2'
+    ctrl-alt-3 = 'workspace 3'
+    ctrl-alt-4 = 'workspace 4'
+    ctrl-alt-5 = 'workspace 5'
+    ctrl-alt-6 = 'workspace 6'
+    ctrl-alt-7 = 'workspace 7'
+    ctrl-alt-8 = 'workspace 8'
+    ctrl-alt-9 = 'workspace 9'
+    ctrl-alt-0 = 'workspace 10'
+
+    # Named workspaces — assign letters for quick access
+    # Note: alt-h/j/k/l are focus keys above, so they are not workspace keys.
+    ctrl-alt-m = 'workspace m'   # Linear
+    ctrl-alt-n = 'workspace n'   # Notion
+    ctrl-alt-s = 'workspace s'   # Slack
+    ctrl-alt-c = 'workspace c'   # Calendar
+    ctrl-alt-b = 'workspace b'   # Main project
+    ctrl-alt-z = 'workspace z'   # Secondary project
+
+
+    # Move focused window to workspace.
+    ctrl-alt-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
+    ctrl-alt-shift-2 = ['move-node-to-workspace 2', 'workspace 2']
+    ctrl-alt-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
+    ctrl-alt-shift-4 = ['move-node-to-workspace 4', 'workspace 4']
+    ctrl-alt-shift-5 = ['move-node-to-workspace 5', 'workspace 5']
+    ctrl-alt-shift-6 = ['move-node-to-workspace 6', 'workspace 6']
+    ctrl-alt-shift-7 = ['move-node-to-workspace 7', 'workspace 7']
+    ctrl-alt-shift-8 = ['move-node-to-workspace 8', 'workspace 8']
+    ctrl-alt-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
+    ctrl-alt-shift-0 = ['move-node-to-workspace 10', 'workspace 10']
+    ctrl-alt-shift-m = ['move-node-to-workspace m', 'workspace m']
+    ctrl-alt-shift-n = ['move-node-to-workspace n', 'workspace n']
+    ctrl-alt-shift-s = ['move-node-to-workspace s', 'workspace s']
+    ctrl-alt-shift-c = ['move-node-to-workspace c', 'workspace c']
+    ctrl-alt-shift-b = ['move-node-to-workspace b', 'workspace b']
+    ctrl-alt-shift-z = ['move-node-to-workspace z', 'workspace z']
+
+    # Workspace history / move workspace to another monitor.
+    ctrl-alt-tab = 'workspace-back-and-forth'
+    ctrl-alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+
+    # Window management
+    ctrl-alt-f = 'fullscreen'
+    ctrl-alt-w = 'close'
+    ctrl-alt-enter = 'exec-and-forget open -na alacritty'
+
+    # Enter resize / service / passthrough modes.
+    ctrl-alt-r = 'mode resize'
+
+    # Config reload
+    ctrl-alt-esc = [ 'reload-config', 'mode main' ]
+
+    # Disable macOS hide (conflicts with tiling)
+    cmd-h = []
+    cmd-alt-h = []
+
+    ctrl-alt-shift-semicolon = 'mode service'
+
+# 'resize' mode (Vim hjkl).
+[mode.resize.binding]
+    h = 'resize width -50'
+    j = 'resize height +50'
+    k = 'resize height -50'
+    l = 'resize width +50'
+    equal = 'balance-sizes'
+    enter = 'mode main'
+    esc = 'mode main'
+
+# 'service' mode — less common operations.
+# See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
+[mode.service.binding]
+    esc = ['reload-config', 'mode main']
+    r = ['flatten-workspace-tree', 'mode main'] # reset layout
+    f = ['layout floating tiling', 'mode main'] # toggle floating/tiling
+    backspace = ['close-all-windows-but-current', 'mode main']
+
+    # join-with merges the focused window into an adjacent one.
+    ctrl-alt-shift-h = ['join-with left', 'mode main']
+    ctrl-alt-shift-j = ['join-with down', 'mode main']
+    ctrl-alt-shift-k = ['join-with up', 'mode main']
+    ctrl-alt-shift-l = ['join-with right', 'mode main']
+
+    # Toggle window management on/off entirely (re-enable via menu bar or
+    # `aerospace enable on`, since keys aren't intercepted while disabled).
+    t = ['enable toggle', 'mode main']
+
+# Float the Monzo iOS staging simulator instead of tiling it.
+[[on-window-detected]]
+    if.app-id = 'com.monzo.ios.retail-staging'
+    run = ['layout floating']

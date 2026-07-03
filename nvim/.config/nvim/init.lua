@@ -20,6 +20,11 @@ vim.opt.colorcolumn = "80"
 vim.opt.cursorline = false -- Highlight the current line (TODO)
 vim.opt.showmatch = true
 
+-- Let tree-sitter highlights win over LSP semantic tokens (default 125 > treesitter's 100).
+-- Lowering this below 100 keeps tree-sitter's richer colours where the two overlap (e.g. gopls
+-- flattening every keyword to @lsp.type.keyword), while semantic tokens still apply elsewhere.
+vim.hl.priorities.semantic_tokens = 95
+
 -- Wrapping
 vim.opt.wrap = true
 vim.opt.scrolloff = 8
@@ -409,6 +414,24 @@ require("lazy").setup({
 
 	-- Git integration
 	{ "tpope/vim-fugitive", dependencies = { "tpope/vim-rhubarb" } },
+	{
+		"sindrets/diffview.nvim",
+		cmd = { "DiffviewOpen", "DiffviewFileHistory" },
+		keys = {
+			{ "<leader>dv", "<cmd>DiffviewOpen<cr>", desc = "Diffview: open" },
+			{ "<leader>dh", "<cmd>DiffviewFileHistory %<cr>", desc = "Diffview: file history" },
+			{ "<leader>dH", "<cmd>DiffviewFileHistory<cr>", desc = "Diffview: branch history" },
+			{ "<leader>dc", "<cmd>DiffviewClose<cr>", desc = "Diffview: close" },
+		},
+		opts = {
+			enhanced_diff_hl = true,
+			view = {
+				merge_tool = {
+					layout = "diff3_mixed",
+				},
+			},
+		},
+	},
 
 	-- Test helper
 	{
@@ -964,7 +987,6 @@ require("lazy").setup({
 	{ -- Markdown rendering inline (headings, bullets, code blocks, checkboxes)
 		"MeanderingProgrammer/render-markdown.nvim",
 		ft = { "markdown" },
-		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		opts = {},
 	},
 
@@ -975,33 +997,77 @@ require("lazy").setup({
 	},
 
 	{ -- Highlight, edit, and navigate code
+		-- NOTE: nvim-treesitter's `master` branch is archived; this uses the new `main` branch,
+		--  which has a different API: parsers are installed via `:TSInstall`/`.install()` and
+		--  highlighting is started per-buffer with `vim.treesitter.start()`.
 		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
+		lazy = false,
 		build = ":TSUpdate",
-		opts = {
-			ensure_installed = { "bash", "c", "html", "lua", "luadoc", "markdown", "markdown_inline", "vim", "vimdoc", "go", "python" },
-			-- Autoinstall languages that are not installed
-			auto_install = true,
-			highlight = {
-				enable = true,
-				-- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-				--  If you are experiencing weird indenting issues, add the language to
-				--  the list of additional_vim_regex_highlighting and disabled languages for indent.
-				additional_vim_regex_highlighting = { "ruby" },
-			},
-			indent = { enable = true, disable = { "ruby" } },
-		},
-		config = function(_, opts)
-			-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+		config = function()
+			-- Parsers to always keep installed
+			local ensure_installed = {
+				"bash", "c", "diff", "html", "lua", "luadoc", "markdown", "markdown_inline",
+				"query", "vim", "vimdoc", "go", "gomod", "gowork", "python",
+			}
+			require("nvim-treesitter").install(ensure_installed)
 
-			---@diagnostic disable-next-line: missing-fields
-			require("nvim-treesitter.configs").setup(opts)
+			---@param buf integer
+			---@param language string
+			local function treesitter_try_attach(buf, language)
+				-- Check if a parser exists and load it
+				if not vim.treesitter.language.add(language) then
+					return
+				end
+				-- Enable syntax highlighting and other treesitter features
+				vim.treesitter.start(buf, language)
 
-			-- There are additional nvim-treesitter modules that you can use to interact
-			-- with nvim-treesitter. You should go explore a few and see what interests you:
-			--
-			--    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-			--    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-			--    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+				-- Enable treesitter based folds (uncomment to use)
+				-- vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+				-- vim.wo.foldmethod = "expr"
+
+				-- Enable treesitter based indentation when an indent query exists;
+				-- otherwise it falls back to Vim's built-in indentexpr.
+				if vim.treesitter.query.get(language, "indents") ~= nil then
+					vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+				end
+			end
+
+			local available_parsers = require("nvim-treesitter").get_available()
+			vim.api.nvim_create_autocmd("FileType", {
+				group = vim.api.nvim_create_augroup("treesitter-attach", { clear = true }),
+				callback = function(args)
+					local buf, filetype = args.buf, args.match
+
+					local language = vim.treesitter.language.get_lang(filetype)
+					if not language then
+						return
+					end
+
+					local installed_parsers = require("nvim-treesitter").get_installed("parsers")
+
+					if vim.tbl_contains(installed_parsers, language) then
+						-- Parser already installed: attach right away
+						treesitter_try_attach(buf, language)
+					elseif vim.tbl_contains(available_parsers, language) then
+						-- Available but not installed: install async, then attach
+						require("nvim-treesitter").install(language):await(function()
+							treesitter_try_attach(buf, language)
+						end)
+					else
+						-- Parser exists outside nvim-treesitter; try to attach anyway
+						treesitter_try_attach(buf, language)
+					end
+				end,
+			})
+
+			-- The plugin (lazy = false) can finish loading after the startup buffer's
+			-- FileType already fired, so re-trigger it for buffers that are already open.
+			for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+				if vim.api.nvim_buf_is_loaded(buf) then
+					vim.api.nvim_exec_autocmds("FileType", { buffer = buf })
+				end
+			end
 		end,
 	},
 	{
