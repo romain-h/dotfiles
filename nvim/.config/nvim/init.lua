@@ -519,20 +519,17 @@ require("lazy").setup({
 	-- end,
 	-- },
 
-	-- fzf
-	-- {
-		-- "junegunn/fzf",
-		-- dir = "~/.fzf",
-		-- build = "./install --all" ,
-		-- dependencies = { "junegunn/fzf.vim" },
-		-- config = function()
-			-- vim.g.fzf_layout = { ["down"] = "40%" }
-			-- vim.g.fzf_history_dir = "~/.local/share/fzf-history-nvim"
-		-- end,
-	-- },
+	-- fzf: use the Homebrew install (binary + base vim plugin) instead of letting
+	-- lazy clone junegunn/fzf and download its own standalone binary.
 	{
 		"junegunn/fzf.vim",
-		dependencies = { "junegunn/fzf" },
+		dependencies = {
+			{
+				name = "fzf",
+				dir = vim.fn.isdirectory("/opt/homebrew/opt/fzf") == 1 and "/opt/homebrew/opt/fzf"
+					or "/usr/local/opt/fzf",
+			},
+		},
 		config = function()
 			vim.g.fzf_layout = { ["down"] = "40%" }
 			vim.g.fzf_history_dir = "~/.local/share/fzf-history-nvim"
@@ -1174,3 +1171,8 @@ end
   -- pattern = "*",
   -- callback = limit_vertical_splits
 -- })
+--
+-- PATCH: https://github.com/tpope/vim-fugitive/issues/2441
+vim.api.nvim_create_user_command("Browse", function(opts)
+  vim.fn.system({ "open", opts.fargs[1] })
+end, { nargs = 1 })
